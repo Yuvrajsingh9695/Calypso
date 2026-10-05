@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="bg-dark text-white py-5">
+
+  <div class="container">
+
+    <div class="row g-5 align-items-center">
+
+      <!-- Movie Poster -->
+
+      <div class="col-md-4">
+
+        {% if movie.poster_path %}
+
+          <img
+            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+            class="img-fluid rounded shadow"
+            alt="{{ movie.title }}"
+          >
+
+        {% endif %}
+
+      </div>
+
+
+      <!-- Movie Details -->
+
+      <div class="col-md-8">
+
+        <h1 class="display-4 fw-bold">
+          {{ movie.title }}
+        </h1>
+
+
+        {% if movie.release_date %}
+
+          <p class="text-secondary">
+            {{ movie.release_date|date:"Y" }}
+          </p>
+
+        {% endif %}
+
+
+        <!-- Ratings -->
+
+        <div class="mb-3">
+
+          <span class="badge bg-warning text-dark">
+            ⭐ {{ movie.vote_average|floatformat:1 }}
+          </span>
+
+
+          {% if movie.imdb_rating %}
+
+            <span class="badge bg-secondary ms-2">
+              IMDb {{ movie.imdb_rating|floatformat:1 }}
+            </span>
+
+          {% endif %}
+
+        </div>
+
+
+        <!-- Watchlist + Collection -->
+
+        {% if user.is_authenticated %}
+
+          <div class="d-flex flex-wrap gap-2 mb-4">
+
+            {% if in_watchlist %}
+
+              <form
+                method="POST"
+                action="{% url 'remove-movie-watchlist' movie.tmdb_id %}"
+                class="d-inline"
+              >
+
+                {% csrf_token %}
+
+                <button
+                  type="submit"
+                  class="btn btn-outline-danger"
+                >
+
+                  <i class="fa-solid fa-bookmark me-1"></i>
+
+                  Remove from Watchlist
+
+                </button>
+
+              </form>
+
+            {% else %}
+
+              <form
+                method="POST"
+                action="{% url 'add-movie-watchlist' movie.tmdb_id %}"
+                class="d-inline"
+              >
+
+                {% csrf_token %}
+
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                >
+
+                  <i class="fa-solid fa-bookmark me-1"></i>
+
+                  Add to Watchlist
+
+                </button>
+
+              </form>
+
+            {% endif %}
+
+
+            <!-- Add to Collection -->
+
+            <a
+              href="{% url 'movie-collection-selector' movie.tmdb_id %}"
+              class="btn btn-outline-light"
+            >
+
+              <i class="fa-solid fa-layer-group me-1"></i>
+
+              Add to Collection
+
+            </a>
+
+          </div>
+
+        {% else %}
+
+          <div class="d-flex flex-wrap gap-2 mb-4">
+
+            <a
+              href="{% url 'login' %}"
+              class="btn btn-outline-light"
+            >
+
+              <i class="fa-solid fa-bookmark me-1"></i>
+
+              Login to Add to Watchlist
+
+            </a>
+
+            <a
+              href="{% url 'login' %}"
+              class="btn btn-outline-light"
+            >
+
+              <i class="fa-solid fa-layer-group me-1"></i>
+
+              Login to Add to Collection
+
+            </a>
+
+          </div>
+
+        {% endif %}
+
+
+        <!-- Genres -->
+
+        {% if movie.genres %}
+
+          <p>
+
+            <strong>
+              Genres:
+            </strong>
+
+            {{ movie.genres }}
+
+          </p>
+
+        {% endif %}
+
+
+        <!-- Director -->
+
+        {% if movie.director %}
+
+          <p>
+
+            <strong>
+              Director:
+            </strong>
+
+            {{ movie.director }}
+
+          </p>
+
+        {% endif %}
+
+
+        <!-- Cast -->
+
+        {% if movie.cast %}
+
+          <p>
+
+            <strong>
+              Cast:
+            </strong>
+
+            {{ movie.cast }}
+
+          </p>
+
+        {% endif %}
+
+
+        <!-- Overview -->
+
+        {% if movie.overview %}
+
+          <p class="lead">
+            {{ movie.overview }}
+          </p>
+
+        {% endif %}
+
+
+        <!-- Trailer -->
+
+        <div class="mt-4">
+
+          <a
+            href="{{ movie.trailer_search_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-danger"
+          >
+
+            <i class="fa-brands fa-youtube me-2"></i>
+
+            Watch Trailer
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- Movie Information -->
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Information -->
+
+      <div class="col-md-6">
+
+        <h3>
+          Movie Information
+        </h3>
+
+
+        <ul class="list-group">
+
+          <li class="list-group-item">
+
+            <strong>
+              Runtime:
+            </strong>
+
+            {{ movie.runtime }} minutes
+
+          </li>
+
+
+          <li class="list-group-item">
+
+            <strong>
+              Language:
+            </strong>
+
+            {{ movie.original_language }}
+
+          </li>
+
+
+          <li class="list-group-item">
+
+            <strong>
+              Votes:
+            </strong>
+
+            {{ movie.vote_count }}
+
+          </li>
+
+
+          {% if movie.certification_us %}
+
+            <li class="list-group-item">
+
+              <strong>
+                Certification:
+              </strong>
+
+              {{ movie.certification_us }}
+
+            </li>
+
+          {% endif %}
+
+        </ul>
+
+      </div>
+
+
+      <!-- Keywords / Writers -->
+
+      <div class="col-md-6">
+
+        {% if movie.keywords %}
+
+          <h3>
+            Keywords
+          </h3>
+
+          <p>
+            {{ movie.keywords }}
+          </p>
+
+        {% endif %}
+
+
+        {% if movie.writers %}
+
+          <h3>
+            Writers
+          </h3>
+
+          <p>
+            {{ movie.writers }}
+          </p>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+
+
+    <!-- Comments -->
+
+    {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+
+  </div>
+
+</section>
+
+
+{% endblock %}

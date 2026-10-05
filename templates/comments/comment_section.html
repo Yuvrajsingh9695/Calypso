@@ -1,0 +1,425 @@
+<section
+    class="comments-section mt-5"
+    id="comments-section"
+>
+
+    <div class="container">
+
+        <!-- ================================================= -->
+        <!-- COMMENTS HEADER -->
+        <!-- ================================================= -->
+
+        <div
+            class="d-flex justify-content-between align-items-center mb-4"
+        >
+
+            <h3 class="text-dark mb-0">
+
+                Comments
+
+            </h3>
+
+            <span
+                class="text-secondary"
+                id="comments-count"
+            >
+
+                {{ comments|length }} comments
+
+            </span>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- NEW COMMENT FORM -->
+        <!-- ================================================= -->
+
+        {% if user.is_authenticated %}
+
+            <form
+                method="POST"
+                action="{{ comment_form_url }}"
+                class="mb-5"
+                id="comment-form"
+            >
+
+                {% csrf_token %}
+
+                <div class="mb-3">
+
+                    <textarea
+                        name="content"
+                        id="comment-content"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Write a comment..."
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="comment-submit-button"
+                >
+
+                    <span
+                        id="comment-submit-text"
+                    >
+                        Post Comment
+                    </span>
+
+                    <span
+                        id="comment-submit-spinner"
+                        class="d-none"
+                    >
+
+                        <span
+                            class="spinner-border spinner-border-sm me-1"
+                            role="status"
+                            aria-hidden="true"
+                        ></span>
+
+                        Posting...
+
+                    </span>
+
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <div class="alert alert-secondary">
+
+                Please
+
+                <a href="{% url 'login' %}">
+                    login
+                </a>
+
+                to comment.
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ================================================= -->
+        <!-- COMMENT LIST -->
+        <!-- ================================================= -->
+
+        <div id="comments-list">
+
+            {% include "comments/comments_list.html" with comments=comments %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- AJAX COMMENT SYSTEM -->
+<!-- ========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const commentsSection =
+            document.getElementById("comments-section");
+
+        const commentsList =
+            document.getElementById("comments-list");
+
+        const commentForm =
+            document.getElementById("comment-form");
+
+        const commentContent =
+            document.getElementById("comment-content");
+
+        const commentSubmitButton =
+            document.getElementById("comment-submit-button");
+
+        const commentSubmitText =
+            document.getElementById("comment-submit-text");
+
+        const commentSubmitSpinner =
+            document.getElementById("comment-submit-spinner");
+
+        const commentsCount =
+            document.getElementById("comments-count");
+
+
+        // =====================================================
+        // CSRF TOKEN
+        // =====================================================
+
+        function getCSRFToken() {
+
+            const csrfInput =
+                document.querySelector(
+                    "#comments-section input[name='csrfmiddlewaretoken']"
+                );
+
+            if (csrfInput) {
+
+                return csrfInput.value;
+
+            }
+
+            return "";
+
+        }
+
+
+        // =====================================================
+        // UPDATE COMMENT LIST
+        // =====================================================
+
+        function updateCommentList(html) {
+
+            commentsList.innerHTML = html;
+
+            const commentCards =
+                commentsList.querySelectorAll(
+                    ".comment-card"
+                );
+
+            commentsCount.textContent =
+                commentCards.length === 1
+                    ? "1 comment"
+                    : `${commentCards.length} comments`;
+
+        }
+
+
+        // =====================================================
+        // SEND AJAX REQUEST
+        // =====================================================
+
+        async function submitCommentForm(form) {
+
+            const url =
+                form.getAttribute("action");
+
+            const formData =
+                new FormData(form);
+
+            const response =
+                await fetch(
+                    url,
+                    {
+                        method: "POST",
+
+                        body: formData,
+
+                        headers: {
+                            "X-Requested-With":
+                                "XMLHttpRequest",
+
+                            "X-CSRFToken":
+                                getCSRFToken(),
+                        },
+
+                        credentials: "same-origin",
+                    }
+                );
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP error ${response.status}`
+                );
+
+            }
+
+            return await response.json();
+
+        }
+
+
+        // =====================================================
+        // MAIN COMMENT FORM
+        // =====================================================
+
+        if (commentForm) {
+
+            commentForm.addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    if (
+                        !commentContent.value.trim()
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    commentSubmitButton.disabled =
+                        true;
+
+                    commentSubmitText.classList.add(
+                        "d-none"
+                    );
+
+                    commentSubmitSpinner.classList.remove(
+                        "d-none"
+                    );
+
+
+                    try {
+
+                        const data =
+                            await submitCommentForm(
+                                commentForm
+                            );
+
+
+                        if (data.success) {
+
+                            updateCommentList(
+                                data.html
+                            );
+
+
+                            commentContent.value =
+                                "";
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Comment error:",
+                            error
+                        );
+
+                        alert(
+                            "Something went wrong while posting the comment."
+                        );
+
+                    }
+
+                    finally {
+
+                        commentSubmitButton.disabled =
+                            false;
+
+                        commentSubmitText.classList.remove(
+                            "d-none"
+                        );
+
+                        commentSubmitSpinner.classList.add(
+                            "d-none"
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        // =====================================================
+        // COMMENT / REPLY / LIKE / DELETE FORMS
+        // =====================================================
+
+        commentsSection.addEventListener(
+            "submit",
+            async function (event) {
+
+                const form =
+                    event.target.closest(
+                        ".ajax-comment-form"
+                    );
+
+
+                if (!form) {
+
+                    return;
+
+                }
+
+
+                event.preventDefault();
+
+
+                const submitButton =
+                    form.querySelector(
+                        "button[type='submit']"
+                    );
+
+
+                if (submitButton) {
+
+                    submitButton.disabled =
+                        true;
+
+                }
+
+
+                try {
+
+                    const data =
+                        await submitCommentForm(
+                            form
+                        );
+
+
+                    if (data.success) {
+
+                        updateCommentList(
+                            data.html
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Comment action error:",
+                        error
+                    );
+
+                    alert(
+                        "Something went wrong. Please try again."
+                    );
+
+                }
+
+                finally {
+
+                    if (submitButton) {
+
+                        submitButton.disabled =
+                            false;
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>

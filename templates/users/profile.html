@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ profile_user.username }} - Profile
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card bg-dark text-light border-secondary shadow">
+
+                <div class="card-body p-4">
+
+                    <!-- Profile Header -->
+
+                    <div class="text-center mb-4">
+
+                        {% if profile_user.profile_picture %}
+
+                            <img
+                                src="{{ profile_user.profile_picture.url }}"
+                                alt="{{ profile_user.username }}"
+                                class="rounded-circle border border-secondary"
+                                width="130"
+                                height="130"
+                                style="object-fit: cover;"
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto"
+                                style="width: 130px; height: 130px;"
+                            >
+
+                                <i class="fa-solid fa-user fa-4x text-light"></i>
+
+                            </div>
+
+                        {% endif %}
+
+                        <h2 class="mt-3 mb-1">
+                            {{ profile_user.username }}
+                        </h2>
+
+                        {% if profile_user.first_name or profile_user.last_name %}
+
+                            <p class="text-secondary mb-0">
+                                {{ profile_user.first_name }}
+                                {{ profile_user.last_name }}
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Statistics -->
+
+                    <div class="row text-center mb-4">
+
+                        <div class="col-4">
+
+                            <a
+                                href="{% url 'followers' %}"
+                                class="text-decoration-none text-light"
+                            >
+
+                                <h4 class="mb-0">
+                                    {{ follower_count }}
+                                </h4>
+
+                                <small class="text-secondary">
+                                    Followers
+                                </small>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="col-4">
+
+                            <a
+                                href="{% url 'following' %}"
+                                class="text-decoration-none text-light"
+                            >
+
+                                <h4 class="mb-0">
+                                    {{ following_count }}
+                                </h4>
+
+                                <small class="text-secondary">
+                                    Following
+                                </small>
+
+                            </a>
+
+                        </div>
+
+
+                        <div class="col-4">
+
+                            <h4 class="mb-0">
+                                {{ comment_count }}
+                            </h4>
+
+                            <small class="text-secondary">
+                                Comments
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <hr class="border-secondary">
+
+
+                    <!-- Profile Picture Form -->
+
+                    <h5 class="mb-3">
+                        Change Profile Picture
+                    </h5>
+
+                    <form
+                        method="POST"
+                        enctype="multipart/form-data"
+                    >
+
+                        {% csrf_token %}
+
+                        {{ form.as_p }}
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Update Profile Picture
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

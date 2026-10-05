@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit {{ collection.name }} - Calypso
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card bg-dark text-light border-secondary">
+
+                <div class="card-body p-4">
+
+                    <h2 class="mb-4">
+                        Edit Collection
+                    </h2>
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <div class="mb-3">
+
+                            <label
+                                for="name"
+                                class="form-label"
+                            >
+                                Collection Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-control"
+                                value="{{ collection.name }}"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            <label
+                                for="description"
+                                class="form-label"
+                            >
+                                Description
+                            </label>
+
+                            <textarea
+                                id="description"
+                                name="description"
+                                class="form-control"
+                                rows="4"
+                            >{{ collection.description }}</textarea>
+
+                        </div>
+
+
+                        <div class="form-check mb-4">
+
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="is_public"
+                                name="is_public"
+
+                                {% if collection.is_public %}
+                                    checked
+                                {% endif %}
+                            >
+
+                            <label
+                                class="form-check-label"
+                                for="is_public"
+                            >
+                                Make this collection public
+                            </label>
+
+                        </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Save Changes
+                            </button>
+
+
+                            <a
+                                href="{% url 'collection-detail' collection.id %}"
+                                class="btn btn-outline-secondary"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

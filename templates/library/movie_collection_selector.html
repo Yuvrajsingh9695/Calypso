@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add {{ movie.title }} to Collection
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card bg-dark text-light border-secondary">
+
+                <div class="card-body p-4">
+
+                    <h2 class="mb-2">
+                        Add to Collection
+                    </h2>
+
+                    <p class="text-secondary mb-4">
+                        Choose a collection for
+                        <strong class="text-light">
+                            {{ movie.title }}
+                        </strong>
+                    </p>
+
+
+                    {% if collections %}
+
+                        <div class="list-group">
+
+                            {% for collection in collections %}
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'add-movie-collection' collection.id movie.tmdb_id %}"
+                                    class="mb-2"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="list-group-item list-group-item-action bg-dark text-light border-secondary text-start"
+                                    >
+
+                                        <div class="d-flex justify-content-between">
+
+                                            <span>
+                                                <i class="fa-solid fa-layer-group me-2"></i>
+                                                {{ collection.name }}
+                                            </span>
+
+                                            <span class="text-secondary">
+                                                {{ collection.items.count }} items
+                                            </span>
+
+                                        </div>
+
+                                    </button>
+
+                                </form>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="text-center py-4">
+
+                            <p class="text-secondary">
+                                You don't have any collections yet.
+                            </p>
+
+                            <a
+                                href="{% url 'create-collection' %}"
+                                class="btn btn-primary"
+                            >
+                                Create Collection
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{% url 'movie-detail' movie.tmdb_id %}"
+                        class="btn btn-outline-secondary mt-3"
+                    >
+                        Cancel
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

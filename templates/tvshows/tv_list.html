@@ -1,0 +1,142 @@
+{% extends "base.html" %} {% block content %}
+
+<section class="bg-dark text-white py-5">
+  <div class="container">
+    <h1 class="display-5 fw-bold">
+      {% if genre %} {{ genre }} TV Shows {% else %} TV Shows {% endif %}
+    </h1>
+
+    <p class="text-secondary mb-0">
+      Explore TV shows from the Calypso collection.
+    </p>
+  </div>
+</section>
+
+<section class="py-5 bg-light">
+  <div class="container">
+    <!-- SEARCH -->
+
+    <form method="get" action="{% url 'tv-shows' %}" class="mb-5">
+      <div class="input-group">
+        <input
+          type="text"
+          name="q"
+          value="{{ query }}"
+          class="form-control"
+          placeholder="Search TV shows..."
+        />
+
+        <button class="btn btn-dark" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i>
+
+          Search
+        </button>
+      </div>
+    </form>
+
+    <!-- SHOW GRID -->
+
+    <div class="row g-4">
+      {% if shows %} {% for show in shows %}
+
+      <div class="col-6 col-md-4 col-lg-3">
+        <div class="card h-100 shadow-sm">
+          {% if show.poster_path %}
+
+          <img
+            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+            class="card-img-top"
+            alt="{{ show.name }}"
+            loading="lazy"
+          />
+
+          {% else %}
+
+          <div
+            class="bg-secondary text-white d-flex align-items-center justify-content-center"
+            style="height: 350px"
+          >
+            No Poster
+          </div>
+
+          {% endif %}
+
+          <div class="card-body">
+            <h5 class="card-title">{{ show.name }}</h5>
+
+            {% if show.first_air_date %}
+
+            <p class="card-text text-muted">
+              {{ show.first_air_date|date:"Y" }}
+            </p>
+
+            {% endif %}
+
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-warning text-dark">
+                ⭐ {{ show.vote_average|floatformat:1 }}
+              </span>
+
+              <a
+                href="{% url 'tv-detail' show.tmdb_id %}"
+                class="btn btn-sm btn-dark"
+              >
+                Details
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% endfor %} {% else %}
+
+      <div class="col-12">
+        <div class="alert alert-secondary text-center">No TV shows found.</div>
+      </div>
+
+      {% endif %}
+    </div>
+
+    <!-- PAGINATION -->
+
+    {% if total_pages > 1 %}
+
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center">
+        {% if page > 1 %}
+
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="{% url 'tv-list-page' page|add:'-1' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+          >
+            Previous
+          </a>
+        </li>
+
+        {% endif %}
+
+        <li class="page-item active">
+          <span class="page-link"> {{ page }} </span>
+        </li>
+
+        {% if page < total_pages %}
+
+        <li class="page-item">
+          <a
+            class="page-link"
+            href="{% url 'tv-list-page' page|add:'1' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+          >
+            Next
+          </a>
+        </li>
+
+        {% endif %}
+      </ul>
+    </nav>
+
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

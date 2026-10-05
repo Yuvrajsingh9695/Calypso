@@ -1,0 +1,1369 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+
+<!-- ========================================================= -->
+<!-- HERO SECTION -->
+<!-- ========================================================= -->
+
+<section class="hero">
+
+  <div class="hero-overlay"></div>
+
+  <div class="container">
+
+    <div class="row align-items-center min-vh-90">
+
+      <div class="col-lg-7 hero-content">
+
+        <h1>
+          Discover Your Next Favorite Movie
+        </h1>
+
+        <p>
+          Explore thousands of movies, discover new stories,
+          and find something worth watching.
+        </p>
+
+        <a
+          href="/movies/"
+          class="btn btn-primary"
+        >
+          Explore Movies
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- LATEST MOVIES -->
+<!-- ========================================================= -->
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div
+      class="d-flex justify-content-between align-items-center mb-4"
+    >
+
+      <h2>
+        Latest Movies
+      </h2>
+
+      <a
+        href="/movies/"
+        class="btn btn-outline-primary"
+      >
+        View All
+      </a>
+
+    </div>
+
+
+    <div class="row g-4">
+
+      {% for movie in latest_movies %}
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <div class="card h-100 shadow-sm">
+
+          {% if movie.poster_path %}
+
+          <img
+            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+            class="card-img-top"
+            alt="{{ movie.title }}"
+            loading="lazy"
+          >
+
+          {% endif %}
+
+
+          <div class="card-body">
+
+            <h5 class="card-title">
+              {{ movie.title }}
+            </h5>
+
+            {% if movie.release_date %}
+
+            <p class="text-muted">
+              {{ movie.release_date|date:"Y" }}
+            </p>
+
+            {% endif %}
+
+            <p class="card-text">
+              ⭐ {{ movie.vote_average|floatformat:1 }}
+            </p>
+
+            <a
+              href="{% url 'movie-detail' movie.tmdb_id %}"
+              class="btn btn-primary"
+            >
+              Details
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {% empty %}
+
+      <div class="col-12">
+
+        <p class="text-muted">
+          No movies available.
+        </p>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- DISCOVERY TABS -->
+<!-- ========================================================= -->
+
+<section class="py-5 bg-dark text-white">
+
+  <div class="container">
+
+    <div class="text-center mb-5">
+
+      <h2 class="fw-bold">
+        Discover Movies
+      </h2>
+
+      <p class="text-secondary">
+        Explore movies based on what the Calypso community is watching,
+        discussing, and rating.
+      </p>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- TAB NAVIGATION -->
+    <!-- ===================================================== -->
+
+    <ul
+      class="nav nav-pills justify-content-center mb-5"
+      id="discoveryTabs"
+      role="tablist"
+    >
+
+      <!-- Most Commented -->
+
+      <li
+        class="nav-item me-2"
+        role="presentation"
+      >
+
+        <button
+          class="nav-link active"
+          id="most-commented-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#most-commented"
+          type="button"
+          role="tab"
+          aria-controls="most-commented"
+          aria-selected="true"
+        >
+
+          <i class="fa-solid fa-comments me-2"></i>
+
+          Most Commented
+
+        </button>
+
+      </li>
+
+
+      <!-- Most Liked -->
+
+      <li
+        class="nav-item me-2"
+        role="presentation"
+      >
+
+        <button
+          class="nav-link"
+          id="most-liked-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#most-liked"
+          type="button"
+          role="tab"
+          aria-controls="most-liked"
+          aria-selected="false"
+        >
+
+          <i class="fa-solid fa-heart me-2"></i>
+
+          Most Liked
+
+        </button>
+
+      </li>
+
+
+      <!-- IMDb Top Rated -->
+
+      <li
+        class="nav-item"
+        role="presentation"
+      >
+
+        <button
+          class="nav-link"
+          id="imdb-top-tab"
+          data-bs-toggle="pill"
+          data-bs-target="#imdb-top"
+          type="button"
+          role="tab"
+          aria-controls="imdb-top"
+          aria-selected="false"
+        >
+
+          <i class="fa-solid fa-star me-2"></i>
+
+          IMDb Top Rated
+
+        </button>
+
+      </li>
+
+    </ul>
+
+
+    <!-- ===================================================== -->
+    <!-- TAB CONTENT -->
+    <!-- ===================================================== -->
+
+    <div
+      class="tab-content"
+      id="discoveryTabsContent"
+    >
+
+
+      <!-- =================================================== -->
+      <!-- MOST COMMENTED -->
+      <!-- =================================================== -->
+
+      <div
+        class="tab-pane fade show active"
+        id="most-commented"
+        role="tabpanel"
+        aria-labelledby="most-commented-tab"
+      >
+
+        <div class="row g-4">
+
+          {% for movie in most_commented_movies %}
+
+          <div class="col-6 col-md-4 col-lg-3">
+
+            <div class="card h-100 bg-secondary text-white shadow">
+
+              {% if movie.poster_path %}
+
+              <img
+                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                class="card-img-top"
+                alt="{{ movie.title }}"
+                loading="lazy"
+              >
+
+              {% endif %}
+
+
+              <div class="card-body d-flex flex-column">
+
+                <h5 class="card-title">
+                  {{ movie.title }}
+                </h5>
+
+
+                {% if movie.release_date %}
+
+                <p class="text-light small mb-2">
+                  {{ movie.release_date|date:"Y" }}
+                </p>
+
+                {% endif %}
+
+
+                <div class="mb-3">
+
+                  <span class="badge bg-warning text-dark me-1">
+                    ⭐ {{ movie.vote_average|floatformat:1 }}
+                  </span>
+
+                  <span class="badge bg-info text-dark">
+
+                    <i class="fa-solid fa-comments me-1"></i>
+
+                    {{ movie.comment_count }}
+
+                  </span>
+
+                </div>
+
+
+                <a
+                  href="{% url 'movie-detail' movie.tmdb_id %}"
+                  class="btn btn-light btn-sm mt-auto"
+                >
+                  View Movie
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {% empty %}
+
+          <div class="col-12 text-center">
+
+            <i
+              class="fa-solid fa-comments fa-3x text-secondary mb-3"
+            ></i>
+
+            <h4>
+              No comments yet
+            </h4>
+
+            <p class="text-secondary">
+              Once people start discussing movies,
+              the most discussed ones will appear here.
+            </p>
+
+          </div>
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- MOST LIKED -->
+      <!-- =================================================== -->
+
+      <div
+        class="tab-pane fade"
+        id="most-liked"
+        role="tabpanel"
+        aria-labelledby="most-liked-tab"
+      >
+
+        <div class="row g-4">
+
+          {% for movie in most_liked_movies %}
+
+          <div class="col-6 col-md-4 col-lg-3">
+
+            <div class="card h-100 bg-secondary text-white shadow">
+
+              {% if movie.poster_path %}
+
+              <img
+                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                class="card-img-top"
+                alt="{{ movie.title }}"
+                loading="lazy"
+              >
+
+              {% endif %}
+
+
+              <div class="card-body d-flex flex-column">
+
+                <h5 class="card-title">
+                  {{ movie.title }}
+                </h5>
+
+
+                {% if movie.release_date %}
+
+                <p class="text-light small mb-2">
+                  {{ movie.release_date|date:"Y" }}
+                </p>
+
+                {% endif %}
+
+
+                <div class="mb-3">
+
+                  <span class="badge bg-warning text-dark me-1">
+                    ⭐ {{ movie.vote_average|floatformat:1 }}
+                  </span>
+
+                  <span class="badge bg-danger">
+
+                    <i class="fa-solid fa-heart me-1"></i>
+
+                    {{ movie.like_count }}
+
+                  </span>
+
+                </div>
+
+
+                <a
+                  href="{% url 'movie-detail' movie.tmdb_id %}"
+                  class="btn btn-light btn-sm mt-auto"
+                >
+                  View Movie
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {% empty %}
+
+          <div class="col-12 text-center">
+
+            <i
+              class="fa-solid fa-heart fa-3x text-secondary mb-3"
+            ></i>
+
+            <h4>
+              No liked comments yet
+            </h4>
+
+            <p class="text-secondary">
+              Movies with the most-liked discussions will appear here.
+            </p>
+
+          </div>
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================== -->
+      <!-- IMDb TOP RATED -->
+      <!-- =================================================== -->
+
+      <div
+        class="tab-pane fade"
+        id="imdb-top"
+        role="tabpanel"
+        aria-labelledby="imdb-top-tab"
+      >
+
+        <div class="row g-4">
+
+          {% for movie in imdb_top_movies %}
+
+          <div class="col-6 col-md-4 col-lg-3">
+
+            <div class="card h-100 bg-secondary text-white shadow">
+
+              {% if movie.poster_path %}
+
+              <img
+                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                class="card-img-top"
+                alt="{{ movie.title }}"
+                loading="lazy"
+              >
+
+              {% endif %}
+
+
+              <div class="card-body d-flex flex-column">
+
+                <h5 class="card-title">
+                  {{ movie.title }}
+                </h5>
+
+
+                {% if movie.release_date %}
+
+                <p class="text-light small mb-2">
+                  {{ movie.release_date|date:"Y" }}
+                </p>
+
+                {% endif %}
+
+
+                <div class="mb-3">
+
+                  <span class="badge bg-warning text-dark">
+
+                    <i class="fa-solid fa-star me-1"></i>
+
+                    IMDb {{ movie.imdb_rating|floatformat:1 }}
+
+                  </span>
+
+                  {% if movie.imdb_votes %}
+
+                  <span class="badge bg-dark">
+
+                    {{ movie.imdb_votes }} votes
+
+                  </span>
+
+                  {% endif %}
+
+                </div>
+
+
+                <a
+                  href="{% url 'movie-detail' movie.tmdb_id %}"
+                  class="btn btn-light btn-sm mt-auto"
+                >
+                  View Movie
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {% empty %}
+
+          <div class="col-12 text-center">
+
+            <i
+              class="fa-solid fa-star fa-3x text-secondary mb-3"
+            ></i>
+
+            <h4>
+              IMDb ratings unavailable
+            </h4>
+
+            <p class="text-secondary">
+              Movies with IMDb ratings will appear here.
+            </p>
+
+          </div>
+
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- TV SHOWS -->
+<!-- ========================================================= -->
+
+<section class="bg-dark text-white py-5">
+
+  <div class="container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+      <div>
+
+        <h2>
+          TV Shows
+        </h2>
+
+        <p class="text-secondary mb-0">
+          Discover TV shows on Calypso.
+        </p>
+
+      </div>
+
+      <a
+        href="{% url 'tv-shows' %}"
+        class="btn btn-outline-light"
+      >
+        View All
+      </a>
+
+    </div>
+
+
+    <div class="row g-4">
+
+      {% for show in latest_shows %}
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <div class="card h-100 bg-secondary text-white">
+
+          {% if show.poster_path %}
+
+          <img
+            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+            class="card-img-top"
+            alt="{{ show.name }}"
+            loading="lazy"
+          >
+
+          {% endif %}
+
+
+          <div class="card-body">
+
+            <h5 class="card-title">
+              {{ show.name }}
+            </h5>
+
+
+            {% if show.first_air_date %}
+
+            <p class="text-light small">
+              {{ show.first_air_date|date:"Y" }}
+            </p>
+
+            {% endif %}
+
+
+            <span class="badge bg-warning text-dark">
+              ⭐ {{ show.vote_average|floatformat:1 }}
+            </span>
+
+
+            <a
+              href="{% url 'tv-detail' show.tmdb_id %}"
+              class="btn btn-light btn-sm float-end"
+            >
+              Details
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {% empty %}
+
+      <div class="col-12">
+
+        <p class="text-secondary">
+          No TV shows available.
+        </p>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- POPULAR TV SHOWS -->
+<!-- ========================================================= -->
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div
+      class="d-flex justify-content-between align-items-center mb-4"
+    >
+
+      <h2>
+        Popular TV Shows
+      </h2>
+
+      <a
+        href="{% url 'tv-shows' %}"
+        class="btn btn-outline-primary"
+      >
+        View All
+      </a>
+
+    </div>
+
+
+    <div class="row g-4">
+
+      {% for show in popular_shows %}
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <div class="card h-100 shadow-sm">
+
+          {% if show.poster_path %}
+
+          <img
+            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+            class="card-img-top"
+            alt="{{ show.name }}"
+            loading="lazy"
+          >
+
+          {% endif %}
+
+
+          <div class="card-body">
+
+            <h5 class="card-title">
+              {{ show.name }}
+            </h5>
+
+
+            <span class="badge bg-warning text-dark">
+              ⭐ {{ show.vote_average|floatformat:1 }}
+            </span>
+
+
+            <a
+              href="{% url 'tv-detail' show.tmdb_id %}"
+              class="btn btn-dark btn-sm float-end"
+            >
+              Details
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {% empty %}
+
+      <div class="col-12">
+
+        <p class="text-muted">
+          No popular TV shows available.
+        </p>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- GENRES -->
+<!-- ========================================================= -->
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="mb-4">
+
+      <h2>
+        Browse by Genre
+      </h2>
+
+      <p class="text-muted">
+        Find movies based on your favorite genre.
+      </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+
+      <!-- ACTION -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/action/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Action
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Explosions, fights and questionable survival skills.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- COMEDY -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/comedy/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Comedy
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Movies designed to make you laugh.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- DRAMA -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/drama/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Drama
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Stories with feelings. Humans love those.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- HORROR -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/horror/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Horror
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Monsters, ghosts and bad decisions.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- SCI-FI -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/scifi/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Sci-Fi
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Space, technology and futuristic worlds.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- ROMANCE -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/romance/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Romance
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Love stories and emotional damage.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- THRILLER -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/thriller/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Thriller
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Suspense, mystery and plot twists.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- ANIMATION -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/animation/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Animation
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Animated stories for every age.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- WAR -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/war/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  War
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Where courage has no limits.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- SPORTS -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/sports/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Sports
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Chase the victory.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- DOCUMENTARY -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/documentary/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Documentary
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Stories beyond the screen.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+      <!-- ROMCOM -->
+
+      <div class="col-6 col-md-4 col-lg-3">
+
+        <a
+          href="/genre/romcom/"
+          class="text-decoration-none"
+        >
+
+          <div class="card-wrapper">
+
+            <div class="card text-center h-100">
+
+              <div class="card-body">
+
+                <h5 class="card-title">
+                  Romcom
+                </h5>
+
+                <p class="text-muted mb-0">
+                  Love, laughs and everything between.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- WHY CALYPSO -->
+<!-- ========================================================= -->
+
+<section class="py-5 bg-light">
+
+  <div class="container">
+
+    <div class="text-center mb-5">
+
+      <h2>
+        Why Calypso?
+      </h2>
+
+      <p class="text-muted">
+        Everything you need to discover your next favorite movie.
+      </p>
+
+    </div>
+
+
+    <div class="row g-4">
+
+
+      <!-- FEATURE 1 -->
+
+      <div class="col-md-4">
+
+        <div class="card h-100 text-center border-0">
+
+          <div class="card-body p-4">
+
+            <h4 class="card-title">
+              Discover Movies
+            </h4>
+
+            <p class="card-text text-muted">
+              Explore movies from different genres,
+              years, and categories.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- FEATURE 2 -->
+
+      <div class="col-md-4">
+
+        <div class="card h-100 text-center border-0">
+
+          <div class="card-body p-4">
+
+            <h4 class="card-title">
+              Find Your Favorites
+            </h4>
+
+            <p class="card-text text-muted">
+              Save movies you love and keep track
+              of what you want to watch.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- FEATURE 3 -->
+
+      <div class="col-md-4">
+
+        <div class="card h-100 text-center border-0">
+
+          <div class="card-body p-4">
+
+            <h4 class="card-title">
+              Personalized Experience
+            </h4>
+
+            <p class="card-text text-muted">
+              Create your profile and build your
+              own movie collection.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ========================================================= -->
+<!-- CALL TO ACTION -->
+<!-- ========================================================= -->
+
+{% if not user.is_authenticated %}
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="text-center">
+
+      <h2>
+        Ready to Find Your Next Favorite Movie?
+      </h2>
+
+      <p class="text-muted mb-4">
+        Create an account and start building
+        your personal movie collection.
+      </p>
+
+
+      <a
+        href="/users/register/"
+        class="btn btn-primary me-2"
+      >
+        Create Account
+      </a>
+
+
+      <a
+        href="/movies/"
+        class="btn btn-outline-primary"
+      >
+        Browse Movies
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add {{ tv_show.name }} to Collection - Calypso
+{% endblock %}
+
+{% block content %}
+
+<section class="container py-5">
+
+  <div class="row justify-content-center">
+
+    <div class="col-lg-9">
+
+      <div class="card bg-dark text-light border-secondary shadow">
+
+        <div class="card-body p-4">
+
+          <h2 class="mb-4">
+
+            <i class="fa-solid fa-layer-group me-2"></i>
+
+            Add to Collection
+
+          </h2>
+
+
+          <div class="d-flex align-items-center mb-4">
+
+            {% if tv_show.poster_path %}
+
+              <img
+                src="https://image.tmdb.org/t/p/w200{{ tv_show.poster_path }}"
+                alt="{{ tv_show.name }}"
+                class="rounded me-3"
+                style="
+                  width: 90px;
+                  height: 135px;
+                  object-fit: cover;
+                "
+              >
+
+            {% endif %}
+
+
+            <div>
+
+              <h4 class="mb-1">
+
+                {{ tv_show.name }}
+
+              </h4>
+
+
+              {% if tv_show.first_air_date %}
+
+                <p class="text-secondary mb-0">
+
+                  {{ tv_show.first_air_date|date:"Y" }}
+
+                </p>
+
+              {% endif %}
+
+            </div>
+
+          </div>
+
+
+          {% if collections %}
+
+            <h5 class="mb-3">
+
+              Choose a Collection
+
+            </h5>
+
+
+            <div class="list-group">
+
+              {% for collection in collections %}
+
+                <div
+                  class="list-group-item bg-dark text-light border-secondary"
+                >
+
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+
+                    <div>
+
+                      <h5 class="mb-1">
+
+                        {{ collection.name }}
+
+                      </h5>
+
+
+                      {% if collection.description %}
+
+                        <p class="text-secondary mb-1">
+
+                          {{ collection.description }}
+
+                        </p>
+
+                      {% endif %}
+
+                    </div>
+
+
+                    <form
+                      method="POST"
+                      action="{% url 'add-tv-collection' collection.id tv_show.id %}"
+                    >
+
+                      {% csrf_token %}
+
+
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                      >
+
+                        <i class="fa-solid fa-plus me-1"></i>
+
+                        Add
+
+                      </button>
+
+                    </form>
+
+                  </div>
+
+                </div>
+
+              {% endfor %}
+
+            </div>
+
+          {% else %}
+
+            <div class="text-center py-4">
+
+              <i
+                class="fa-solid fa-layer-group fa-3x text-secondary mb-3"
+              ></i>
+
+
+              <h4>
+
+                No collections yet
+
+              </h4>
+
+
+              <p class="text-secondary">
+
+                Create a collection first, then add this TV show to it.
+
+              </p>
+
+
+              <a
+                href="{% url 'create-collection' %}"
+                class="btn btn-primary"
+              >
+
+                <i class="fa-solid fa-plus me-1"></i>
+
+                Create Collection
+
+              </a>
+
+            </div>
+
+          {% endif %}
+
+
+          <div class="mt-4">
+
+            <a
+              href="{% url 'tv-detail' tv_show.tmdb_id %}"
+              class="btn btn-outline-light"
+            >
+
+              <i class="fa-solid fa-arrow-left me-1"></i>
+
+              Back to TV Show
+
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endblock %}

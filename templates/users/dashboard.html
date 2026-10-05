@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard - Calypso
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+  <!-- Dashboard Heading -->
+
+  <h1 class="text-light mb-4">
+    Dashboard
+  </h1>
+
+
+  <!-- Profile Summary -->
+
+  <div class="card bg-dark text-light border-secondary mb-4">
+
+    <div class="card-body">
+
+      <div class="d-flex align-items-center">
+
+        {% if user.profile_picture %}
+
+          <img
+            src="{{ user.profile_picture.url }}"
+            alt="{{ user.username }}"
+            class="rounded-circle me-3"
+            width="75"
+            height="75"
+            style="object-fit: cover;"
+          >
+
+        {% else %}
+
+          <div
+            class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+            style="width: 75px; height: 75px;"
+          >
+
+            <i class="fa-solid fa-user fa-2x text-light"></i>
+
+          </div>
+
+        {% endif %}
+
+
+        <div>
+
+          <h3 class="mb-1">
+            {{ user.username }}
+          </h3>
+
+
+          <a
+            href="{% url 'profile' %}"
+            class="text-decoration-none"
+          >
+
+            View Profile
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Statistics -->
+
+  <div class="row g-4 mb-4">
+
+
+    <!-- Followers -->
+
+    <div class="col-md-4">
+
+      <div class="card bg-dark text-light border-secondary h-100">
+
+        <div class="card-body text-center">
+
+          <i class="fa-solid fa-users fa-2x mb-3"></i>
+
+
+          <h3>
+            {{ follower_count }}
+          </h3>
+
+
+          <p class="text-secondary mb-3">
+            Followers
+          </p>
+
+
+          <a
+            href="{% url 'followers' %}"
+            class="btn btn-outline-light"
+          >
+
+            View Followers
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Following -->
+
+    <div class="col-md-4">
+
+      <div class="card bg-dark text-light border-secondary h-100">
+
+        <div class="card-body text-center">
+
+          <i class="fa-solid fa-user-group fa-2x mb-3"></i>
+
+
+          <h3>
+            {{ following_count }}
+          </h3>
+
+
+          <p class="text-secondary mb-3">
+            Following
+          </p>
+
+
+          <a
+            href="{% url 'following' %}"
+            class="btn btn-outline-light"
+          >
+
+            View Following
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Comments -->
+
+    <div class="col-md-4">
+
+      <div class="card bg-dark text-light border-secondary h-100">
+
+        <div class="card-body text-center">
+
+          <i class="fa-solid fa-comments fa-2x mb-3"></i>
+
+
+          <h3>
+            {{ comment_count }}
+          </h3>
+
+
+          <p class="text-secondary mb-3">
+            Comments
+          </p>
+
+
+          <span class="btn btn-outline-secondary disabled">
+
+            Your Activity
+
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Watchlist + Collections -->
+
+  <div class="row g-4">
+
+
+    <!-- Watchlist -->
+
+    <div class="col-md-6">
+
+      <div class="card bg-dark text-light border-secondary h-100">
+
+        <div class="card-body">
+
+          <h4>
+
+            <i class="fa-solid fa-bookmark me-2"></i>
+
+            Watchlist
+
+          </h4>
+
+
+          <p class="text-secondary">
+
+            Keep track of movies and TV shows you want to watch.
+
+          </p>
+
+
+          <a
+            href="{% url 'watchlist' %}"
+            class="btn btn-outline-light"
+          >
+
+            <i class="fa-solid fa-bookmark me-1"></i>
+
+            Open Watchlist
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- Collections -->
+
+    <div class="col-md-6">
+
+      <div class="card bg-dark text-light border-secondary h-100">
+
+        <div class="card-body">
+
+          <h4>
+
+            <i class="fa-solid fa-layer-group me-2"></i>
+
+            Collections
+
+          </h4>
+
+
+          <p class="text-secondary">
+
+            Create and manage your own movie and TV show collections.
+
+          </p>
+
+
+          <a
+            href="{% url 'collection-list' %}"
+            class="btn btn-outline-light"
+          >
+
+            <i class="fa-solid fa-layer-group me-1"></i>
+
+            Open Collections
+
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Quick Actions -->
+
+  <div class="card bg-dark text-light border-secondary mt-4">
+
+    <div class="card-body">
+
+      <h4 class="mb-3">
+        Quick Actions
+      </h4>
+
+
+      <div class="d-flex flex-wrap gap-2">
+
+        <a
+          href="{% url 'watchlist' %}"
+          class="btn btn-outline-light"
+        >
+
+          <i class="fa-solid fa-bookmark me-1"></i>
+
+          Watchlist
+
+        </a>
+
+
+        <a
+          href="{% url 'collection-list' %}"
+          class="btn btn-outline-light"
+        >
+
+          <i class="fa-solid fa-layer-group me-1"></i>
+
+          Collections
+
+        </a>
+
+
+        <a
+          href="{% url 'create-collection' %}"
+          class="btn btn-primary"
+        >
+
+          <i class="fa-solid fa-plus me-1"></i>
+
+          New Collection
+
+        </a>
+
+
+        <a
+          href="{% url 'profile' %}"
+          class="btn btn-outline-light"
+        >
+
+          <i class="fa-solid fa-user me-1"></i>
+
+          Profile
+
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

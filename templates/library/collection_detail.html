@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ collection.name }} - Calypso
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-start mb-4">
+
+        <div>
+
+            <div class="d-flex align-items-center gap-2">
+
+                <h1 class="text-dark mb-0">
+                    {{ collection.name }}
+                </h1>
+
+
+                {% if collection.is_public %}
+
+                    <span class="badge bg-success">
+                        Public
+                    </span>
+
+                {% else %}
+
+                    <span class="badge bg-secondary">
+                        Private
+                    </span>
+
+                {% endif %}
+
+            </div>
+
+
+            {% if collection.description %}
+
+                <p class="text-secondary mt-2 mb-0">
+                    {{ collection.description }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if collection.user == user %}
+
+            <div class="d-flex gap-2">
+
+                <a
+                    href="{% url 'edit-collection' collection.id %}"
+                    class="btn btn-outline-light"
+                >
+                    <i class="fa-solid fa-pen me-1"></i>
+                    Edit
+                </a>
+
+
+                <form
+                    method="POST"
+                    action="{% url 'delete-collection' collection.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-outline-danger"
+                        onclick="return confirm('Delete this collection?');"
+                    >
+                        <i class="fa-solid fa-trash me-1"></i>
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Items -->
+
+    {% if items %}
+
+        <div class="row g-4">
+
+            {% for item in items %}
+
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="card bg-dark text-light border-secondary h-100">
+
+
+                        {% if item.movie %}
+
+                            {% if item.movie.poster_path %}
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w500{{ item.movie.poster_path }}"
+                                    class="card-img-top"
+                                    alt="{{ item.movie.title }}"
+                                    style="width: 100%; height: 400px; object-fit: contain; background-color: #212529;"
+                                >
+
+                            {% else %}
+
+                                <div
+                                    class="bg-secondary d-flex align-items-center justify-content-center"
+                                    style="height: 350px;"
+                                >
+
+                                    <i class="fa-solid fa-film fa-3x"></i>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="card-body">
+
+                                <h5>
+                                    {{ item.movie.title }}
+                                </h5>
+
+
+                                {% if collection.user == user %}
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'remove-movie-collection' collection.id item.movie.tmdb_id %}"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger w-100 mt-2"
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+
+                        {% elif item.tv_show %}
+
+                            {% if item.tv_show.poster_path %}
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w500{{ item.tv_show.poster_path }}"
+                                    class="card-img-top"
+                                    alt="{{ item.tv_show.title }}"
+                                    style="height: 350px; object-fit: contain;"
+                                >
+
+                            {% else %}
+
+                                <div
+                                    class="bg-secondary d-flex align-items-center justify-content-center"
+                                    style="height: 350px;"
+                                >
+
+                                    <i class="fa-solid fa-tv fa-3x"></i>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="card-body">
+
+                                <span class="badge bg-secondary mb-2">
+                                    TV Show
+                                </span>
+
+                                <h5>
+                                    {{ item.tv_show.name }}
+                                </h5>
+
+
+                                {% if collection.user == user %}
+
+                                    <form
+                                        method="POST"
+                                        action="{% url 'remove-tv-collection' collection.id item.tv_show.id %}"
+                                    >
+
+                                        {% csrf_token %}
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-outline-danger w-100 mt-2"
+                                        >
+                                            Remove
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="text-center py-5">
+
+            <i class="fa-solid fa-film fa-4x text-secondary mb-4"></i>
+
+            <h3 class="text-light">
+                This collection is empty.
+            </h3>
+
+            <p class="text-secondary">
+                Add movies or TV shows to start building it.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

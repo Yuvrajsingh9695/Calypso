@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}
+Followers - Calypso
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h2 class="text-light mb-4">
+        Followers
+    </h2>
+
+
+    {% if follower_users %}
+
+        <div class="row g-4">
+
+            {% for profile_user in follower_users %}
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card bg-dark text-light border-secondary h-100">
+
+                        <div class="card-body">
+
+                            <div class="d-flex align-items-center">
+
+                                <!-- PFP -->
+
+                                <a
+                                    href="{% url 'user-profile' profile_user.username %}"
+                                    class="text-decoration-none"
+                                >
+
+                                    {% if profile_user.profile_picture %}
+
+                                        <img
+                                            src="{{ profile_user.profile_picture.url }}"
+                                            alt="{{ profile_user.username }}"
+                                            class="rounded-circle me-3"
+                                            width="55"
+                                            height="55"
+                                            style="object-fit: cover;"
+                                        >
+
+                                    {% else %}
+
+                                        <div
+                                            class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                                            style="width: 55px; height: 55px;"
+                                        >
+
+                                            <i class="fa-solid fa-user text-light"></i>
+
+                                        </div>
+
+                                    {% endif %}
+
+                                </a>
+
+
+                                <!-- User Info -->
+
+                                <div>
+
+                                    <a
+                                        href="{% url 'user-profile' profile_user.username %}"
+                                        class="text-decoration-none text-light"
+                                    >
+
+                                        <h5 class="mb-1">
+                                            {{ profile_user.username }}
+                                        </h5>
+
+                                    </a>
+
+                                    <small class="text-secondary">
+
+                                        {{ profile_user.following.count }}
+                                        following
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="text-center py-5">
+
+            <i class="fa-solid fa-user-group fa-3x text-secondary mb-3"></i>
+
+            <h4 class="text-light">
+                You don't have any followers yet.
+            </h4>
+
+            <p class="text-secondary">
+                Your followers will appear here.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,178 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+# ============================================================
+# CALYPSO - DJANGO PROJECT
+# Git ignore configuration
+# ============================================================
+
+
+# ============================================================
+# PYTHON
+# ============================================================
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Python cache / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+
+# ============================================================
+# VIRTUAL ENVIRONMENT
+# ============================================================
+
+.venv/
+venv/
+env/
+ENV/
+
+# Never commit the virtual environment.
+# Teammates should create their own .venv.
+
+
+# ============================================================
+# DJANGO
+# ============================================================
+
+# Local development database
+db.sqlite3
+db.sqlite3-journal
+
+# Django logs
+*.log
+
+# Generated static files
+staticfiles/
+
+
+# ============================================================
+# ENVIRONMENT VARIABLES / SECRETS
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+
+# ============================================================
+# USER UPLOADED FILES
+# ============================================================
+
+media/
+
+# This includes uploaded profile pictures and other user files.
+# Do not commit user-generated media.
+
+
+# ============================================================
+# DATASETS
+# ============================================================
+
+# Large datasets should not be committed to GitHub
+*.csv
+*.json
+*.xlsx
+*.xls
+*.parquet
+*.feather
+
+# If you have a dataset directory, ignore it as well
+data/
+datasets/
+
+
+# ============================================================
+# JUPYTER NOTEBOOK
+# ============================================================
+
+.ipynb_checkpoints/
+
+
+# ============================================================
+# VISUAL STUDIO CODE
+# ============================================================
+
+.vscode/
+
+# If you want to share VS Code settings later, remove this rule.
+# For a team project, keeping personal editor settings out is cleaner.
+
+
+# ============================================================
+# PYCHARM / INTELLIJ
+# ============================================================
+
+.idea/
+*.iml
+
+
+# ============================================================
+# WINDOWS
+# ============================================================
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# ============================================================
+# MACOS
+# ============================================================
+
+.DS_Store
+
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Python distribution/build files
+build/
+dist/
+*.egg-info/
+
+
+# ============================================================
+# LOCAL DEVELOPMENT / DEBUG FILES
+# ============================================================
+
+*.sqlite
+*.sqlite3
+
+# Local server output
+server.log
+
+
+# ============================================================
+# OPTIONAL: LOCAL API / TOOL OUTPUT
+# ============================================================
+
+*.dump
+*.sql
+
+
+# ============================================================
+# IMPORTANT FILES THAT SHOULD REMAIN TRACKED
+# ============================================================
+
+# Do NOT ignore:
+# manage.py
+# requirements.txt
+# Django application source code
+# templates/
+# static/              <- your actual source static files
+# migrations/*.py      <- Django migration files
+# README.md
+# .env.example
