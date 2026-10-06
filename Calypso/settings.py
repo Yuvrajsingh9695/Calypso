@@ -154,8 +154,8 @@ MAILERS = {
         "OPTIONS": {
             "host": "smtp.gmail.com",
             "port": 587,
-            "username": "your-real-gmail@gmail.com",
-            "password": "your-real-app-password",
+            "username": "calypsoproject78@gmail.com",
+            "password": "nxtd rnhb bato bqdw",
             "use_tls": True,
         },
     },
