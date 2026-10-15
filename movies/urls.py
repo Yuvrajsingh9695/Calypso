@@ -22,4 +22,5 @@ urlpatterns = [
     path("genre/scifi/", views.scifi, name="scifi"),
     path("genre/drama/", views.drama, name="drama"),
     path("genre/romance/", views.romance, name="romance"),
+    path("genres/", views.genres_page, name="genres-page"),
 ]

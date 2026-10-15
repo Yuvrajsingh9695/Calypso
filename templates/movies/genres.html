@@ -1,0 +1,190 @@
+{% extends "base.html" %} {% load static %} {% block content %}
+
+<style>
+  .genres-page {
+    min-height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+    padding: 60px 0;
+  }
+
+  .genres-header {
+    text-align: center;
+    margin-bottom: 45px;
+  }
+
+  .genres-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .genres-header p {
+    color: #bdbdbd;
+    font-size: 1.05rem;
+  }
+
+  .genre-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+    height: 100%;
+    padding: 25px;
+    background-color: #242424;
+    border: 1px solid #383838;
+    border-radius: 14px;
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+    transition:
+      transform 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .genre-card:hover {
+    background-color: #303030;
+    border-color: #0d6efd;
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    color: #ffffff;
+  }
+
+  .genre-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+  }
+
+  .genre-card h5 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .genre-card p {
+    font-size: 0.9rem;
+    color: #bdbdbd;
+    margin-bottom: 0;
+  }
+
+  .genre-card:hover p {
+    color: #e0e0e0;
+  }
+
+  @media (max-width: 576px) {
+    .genres-page {
+      padding: 40px 0;
+    }
+
+    .genres-header h1 {
+      font-size: 2rem;
+    }
+
+    .genre-card {
+      min-height: 160px;
+      padding: 18px;
+    }
+
+    .genre-icon {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<section class="genres-page">
+  <div class="container">
+    <!-- PAGE HEADER -->
+    <div class="genres-header">
+      <h1>Browse by Genre</h1>
+      <p>Find your next favorite movie by exploring your favorite genres.</p>
+    </div>
+
+    <!-- GENRE CARDS -->
+    <div class="row g-4">
+      <!-- ACTION -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/action/" class="genre-card">
+          <div class="genre-icon">💥</div>
+          <h5>Action</h5>
+          <p>Explosions, fights and thrilling adventures.</p>
+        </a>
+      </div>
+
+      <!-- COMEDY -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/comedy/" class="genre-card">
+          <div class="genre-icon">😂</div>
+          <h5>Comedy</h5>
+          <p>Funny stories and unforgettable laughs.</p>
+        </a>
+      </div>
+
+      <!-- DRAMA -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/drama/" class="genre-card">
+          <div class="genre-icon">🎭</div>
+          <h5>Drama</h5>
+          <p>Emotional stories and powerful performances.</p>
+        </a>
+      </div>
+
+      <!-- HORROR -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/horror/" class="genre-card">
+          <div class="genre-icon">👻</div>
+          <h5>Horror</h5>
+          <p>Dark mysteries and terrifying encounters.</p>
+        </a>
+      </div>
+
+      <!-- SCI-FI -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/scifi/" class="genre-card">
+          <div class="genre-icon">🚀</div>
+          <h5>Sci-Fi</h5>
+          <p>Space, technology and futuristic worlds.</p>
+        </a>
+      </div>
+
+      <!-- ROMANCE -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/romance/" class="genre-card">
+          <div class="genre-icon">❤️</div>
+          <h5>Romance</h5>
+          <p>Love stories and heartfelt moments.</p>
+        </a>
+      </div>
+
+      <!-- THRILLER -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/thriller/" class="genre-card">
+          <div class="genre-icon">🔍</div>
+          <h5>Thriller</h5>
+          <p>Suspense, secrets and unexpected twists.</p>
+        </a>
+      </div>
+
+      <!-- ANIMATION -->
+      <div class="col-6 col-md-4 col-lg-3">
+        <a href="/genre/animation/" class="genre-card">
+          <div class="genre-icon">🎨</div>
+          <h5>Animation</h5>
+          <p>Animated adventures for every age.</p>
+        </a>
+      </div>
+    </div>
+
+    <!-- BACK TO HOME -->
+    <div class="text-center mt-5">
+      <a href="/" class="btn btn-outline-light">
+        <i class="fa-solid fa-house me-2"></i>
+        Back to Home
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

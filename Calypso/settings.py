@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "tvshows",
     "comments",
     "recommendations",
+    "analytics",
 ]
 
 AUTH_USER_MODEL = "users.User"
@@ -160,4 +161,3 @@ MAILERS = {
         },
     },
 }
-

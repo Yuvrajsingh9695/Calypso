@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container py-5 analytics-dashboard">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold">Calypso Analytics</h1>
+            <p class="text-secondary mb-0">
+                Platform performance report for {{ report_date|date:"d M Y" }}
+            </p>
+        </div>
+
+        <button class="btn btn-outline-light" onclick="window.print()">
+            Print / Save as PDF
+        </button>
+    </div>
+
+    <h4 class="mb-3">Platform overview</h4>
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Total users</p>
+                <h2>{{ total_users }}</h2>
+                <small>New today: {{ new_users_today }}</small>
+                <br>
+                <small>This month: {{ new_users_month }}</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Total movies</p>
+                <h2>{{ total_movies }}</h2>
+                <small>Added today: {{ new_movies_today }}</small>
+                <br>
+                <small>This month: {{ new_movies_month }}</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Total TV shows</p>
+                <h2>{{ total_shows }}</h2>
+                <small>Added today: {{ new_shows_today }}</small>
+                <br>
+                <small>This month: {{ new_shows_month }}</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Total comments</p>
+                <h2>{{ total_comments }}</h2>
+                <small>New today: {{ new_comments_today }}</small>
+                <br>
+                <small>Replies: {{ total_replies }}</small>
+            </div>
+        </div>
+
+    </div>
+
+    <h4 class="mb-3">Community engagement</h4>
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Comment likes</p>
+                <h2>{{ total_comment_likes }}</h2>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Watchlists</p>
+                <h2>{{ total_watchlists }}</h2>
+                <small>Saved items: {{ total_watchlist_items }}</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Collections</p>
+                <h2>{{ total_collections }}</h2>
+                <small>Public: {{ public_collections }}</small>
+                <br>
+                <small>Items: {{ total_collection_items }}</small>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="analytics-card">
+                <p>Follow relationships</p>
+                <h2>{{ total_follow_relationships }}</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <h4 class="mb-3">Growth over the last six months</h4>
+
+    <div class="row g-4 mb-5">
+        <div class="col-12">
+            <div class="analytics-card">
+                <h5>New users</h5>
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card">
+                <h5>New movies</h5>
+                <canvas id="moviesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card">
+                <h5>New TV shows</h5>
+                <canvas id="showsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card">
+                <h4>Popular movies</h4>
+                {% for movie in popular_movies %}
+                    <div class="analytics-list-item">
+                        <span>{{ forloop.counter }}. {{ movie.title }}</span>
+                        <span>{{ movie.popularity|floatformat:1 }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-secondary">No movies available.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="analytics-card">
+                <h4>Popular TV shows</h4>
+                {% for show in popular_shows %}
+                    <div class="analytics-list-item">
+                        <span>{{ forloop.counter }}. {{ show.name }}</span>
+                        <span>{{ show.popularity|floatformat:1 }}</span>
+                    </div>
+                {% empty %}
+                    <p class="text-secondary">No TV shows available.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <p class="text-secondary small mt-4">
+        Counts reflect records stored in Calypso. Newly added records are
+        measured using their database creation timestamps, not their original
+        release dates. Popularity reflects the stored metadata value.
+    </p>
+
+</div>
+
+{{ monthly_labels|json_script:"monthly-labels" }}
+{{ monthly_users|json_script:"monthly-users" }}
+{{ monthly_movies|json_script:"monthly-movies" }}
+{{ monthly_shows|json_script:"monthly-shows" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = JSON.parse(
+        document.getElementById("monthly-labels").textContent
+    );
+
+    const userData = JSON.parse(
+        document.getElementById("monthly-users").textContent
+    );
+
+    const movieData = JSON.parse(
+        document.getElementById("monthly-movies").textContent
+    );
+
+    const showData = JSON.parse(
+        document.getElementById("monthly-shows").textContent
+    );
+
+    function createChart(elementId, label, data) {
+        new Chart(document.getElementById(elementId), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: data,
+                    tension: 0.3,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    createChart("usersChart", "New users", userData);
+    createChart("moviesChart", "Movies added", movieData);
+    createChart("showsChart", "TV shows added", showData);
+</script>
+{% endblock %}

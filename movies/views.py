@@ -7,7 +7,6 @@ from comments.models import Comment
 from .models import Movie
 from tvshows.models import TVShow
 
-
 # ==================================================
 # HOME
 # ==================================================
@@ -43,31 +42,53 @@ def home_page(request):
     )
 
     # --------------------------------------------------
+    # Base TV Shows QuerySet
+    # --------------------------------------------------
+
+    tv_queryset = TVShow.objects.filter(
+        vote_count__gte=10,
+        poster_path__isnull=False,
+    ).exclude(poster_path="")
+
+    # --------------------------------------------------
     # Latest TV Shows
     # --------------------------------------------------
 
-    latest_shows = (
-        TVShow.objects.filter(
-            vote_count__gte=10,
-            first_air_date__isnull=False,
-            poster_path__isnull=False,
-        )
-        .exclude(poster_path="")
-        .order_by("-first_air_date")[:8]
-    )
+    latest_shows = tv_queryset.filter(
+        first_air_date__isnull=False,
+    ).order_by(
+        "-first_air_date"
+    )[:8]
 
     # --------------------------------------------------
     # Popular TV Shows
     # --------------------------------------------------
 
-    popular_shows = (
-        TVShow.objects.filter(
-            vote_count__gte=10,
-            poster_path__isnull=False,
-        )
-        .exclude(poster_path="")
-        .order_by("-popularity")[:8]
-    )
+    popular_shows = tv_queryset.order_by(
+        "-popularity",
+        "-vote_count",
+    )[:8]
+
+    # --------------------------------------------------
+    # Top Rated TV Shows
+    #
+    # Require a reasonable number of votes so that
+    # one vote of 10.0 does not beat established shows.
+    # --------------------------------------------------
+
+    top_rated_shows = tv_queryset.filter(
+        vote_count__gte=40,
+        vote_average__gt=0,
+    ).order_by("-vote_average", "-vote_count",)[:8]
+
+    # --------------------------------------------------
+    # Most Voted TV Shows
+    # --------------------------------------------------
+
+    most_voted_shows = tv_queryset.order_by(
+        "-vote_count",
+        "-vote_average",
+    )[:8]
 
     # ==================================================
     # HOMEPAGE DISCOVERY TABS
@@ -75,8 +96,6 @@ def home_page(request):
 
     # --------------------------------------------------
     # Most Commented Movies
-    #
-    # Counts all comments belonging to each movie.
     # --------------------------------------------------
 
     most_commented_movies = (
@@ -91,7 +110,9 @@ def home_page(request):
                 distinct=True,
             )
         )
-        .filter(comment_count__gt=0)
+        .filter(
+            comment_count__gt=0,
+        )
         .order_by(
             "-comment_count",
             "-vote_count",
@@ -100,9 +121,6 @@ def home_page(request):
 
     # --------------------------------------------------
     # Most Liked Movies
-    #
-    # Counts likes received by comments belonging
-    # to each movie.
     # --------------------------------------------------
 
     most_liked_movies = (
@@ -121,7 +139,9 @@ def home_page(request):
                 distinct=True,
             ),
         )
-        .filter(like_count__gt=0)
+        .filter(
+            like_count__gt=0,
+        )
         .order_by(
             "-like_count",
             "-comment_count",
@@ -131,10 +151,6 @@ def home_page(request):
 
     # --------------------------------------------------
     # IMDb Top Rated Movies
-    #
-    # imdb_votes is included so that a movie with
-    # an unusually high rating but almost no votes
-    # does not dominate the section.
     # --------------------------------------------------
 
     imdb_top_movies = (
@@ -163,10 +179,12 @@ def home_page(request):
         {
             "latest_movies": latest_movies,
             "popular_movies": popular_movies,
+            # TV Shows
             "latest_shows": latest_shows,
             "popular_shows": popular_shows,
-
-            # Discovery tabs
+            "top_rated_shows": top_rated_shows,
+            "most_voted_shows": most_voted_shows,
+            # Movie discovery tabs
             "most_commented_movies": most_commented_movies,
             "most_liked_movies": most_liked_movies,
             "imdb_top_movies": imdb_top_movies,
@@ -184,13 +202,11 @@ def movie_list(request, page=1):
     query = request.GET.get("q", "").strip()
 
     movies = Movie.objects.filter(
-        vote_count__gte=10
+        vote_count__gte=10,
     )
 
     if query:
-        movies = movies.filter(
-            Q(title__icontains=query)
-        )
+        movies = movies.filter(Q(title__icontains=query))
 
     paginator = Paginator(
         movies,
@@ -257,22 +273,17 @@ def movie_detail(request, movie_id):
 
 def genre_movies(request, genre):
 
-    movies = (
-        Movie.objects.filter(
-            genres__icontains=genre,
-            vote_count__gte=10,
-        )
-        .order_by("-release_date")
-    )
+    movies = Movie.objects.filter(
+        genres__icontains=genre,
+        vote_count__gte=10,
+    ).order_by("-release_date")
 
     paginator = Paginator(
         movies,
         24,
     )
 
-    page_obj = paginator.get_page(
-        request.GET.get("page", 1)
-    )
+    page_obj = paginator.get_page(request.GET.get("page", 1))
 
     return render(
         request,
@@ -313,56 +324,39 @@ def movies3(request):
 
 
 def action(request):
-    return genre_movies(
-        request,
-        "Action",
-    )
+    return genre_movies(request, "Action")
 
 
 def horror(request):
-    return genre_movies(
-        request,
-        "Horror",
-    )
+    return genre_movies(request, "Horror")
 
 
 def drama(request):
-    return genre_movies(
-        request,
-        "Drama",
-    )
+    return genre_movies(request, "Drama")
 
 
 def scifi(request):
-    return genre_movies(
-        request,
-        "Science Fiction",
-    )
+    return genre_movies(request, "Science Fiction")
 
 
 def romance(request):
-    return genre_movies(
-        request,
-        "Romance",
-    )
+    return genre_movies(request, "Romance")
 
 
 def thriller(request):
-    return genre_movies(
-        request,
-        "Thriller",
-    )
+    return genre_movies(request, "Thriller")
 
 
 def comedy(request):
-    return genre_movies(
-        request,
-        "Comedy",
-    )
+    return genre_movies(request, "Comedy")
 
 
 def animation(request):
-    return genre_movies(
+    return genre_movies(request, "Animation")
+
+
+def genres_page(request):
+    return render(
         request,
-        "Animation",
+        "movies/genres.html",
     )

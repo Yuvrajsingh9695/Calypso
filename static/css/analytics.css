@@ -1,0 +1,135 @@
+/* ==========================================================================
+   CALYPSO - ANALYTICS DASHBOARD STYLES
+   Futuristic Telemetry & Glassmorphic Data Hub
+   ========================================================================== */
+
+.analytics-dashboard {
+    color: #f8fafc;
+    font-family: var(--font-body, 'Plus Jakarta Sans', sans-serif);
+}
+
+.analytics-dashboard h1,
+.analytics-dashboard h2,
+.analytics-dashboard h3,
+.analytics-dashboard h4,
+.analytics-dashboard h5 {
+    font-family: var(--font-display, 'Outfit', sans-serif);
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+.analytics-card {
+    height: 100%;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: rgba(18, 24, 38, 0.7);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.analytics-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px rgba(99, 102, 241, 0.3);
+}
+
+.analytics-card:hover::before {
+    opacity: 1;
+}
+
+.analytics-card p {
+    color: #94a3b8;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.analytics-card h2 {
+    font-size: clamp(1.8rem, 3.2vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+    background: linear-gradient(135deg, #ffffff 40%, #c7d2fe 80%, #a855f7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.analytics-card small {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.analytics-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background-color 0.2s ease;
+}
+
+.analytics-list-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+    padding-left: 6px;
+    padding-right: 6px;
+    border-radius: 8px;
+}
+
+.analytics-list-item:last-child {
+    border-bottom: none;
+}
+
+.analytics-card canvas {
+    max-height: 300px;
+}
+
+@media print {
+    body {
+        background: #ffffff !important;
+        color: #111111 !important;
+    }
+
+    .analytics-dashboard {
+        color: #111111 !important;
+    }
+
+    .analytics-card {
+        background: #ffffff !important;
+        color: #111111 !important;
+        box-shadow: none;
+        border: 1px solid #cccccc;
+        break-inside: avoid;
+    }
+
+    .analytics-card h2,
+    .analytics-card h4,
+    .analytics-card h5,
+    .analytics-dashboard h1 {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
+    }
+
+    button,
+    nav,
+    footer {
+        display: none !important;
+    }
+}

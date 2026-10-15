@@ -29,6 +29,7 @@ urlpatterns = [
     path("comments/", include("comments.urls")),
     path("recommendations/", include("recommendations.urls")),
     path("", include("library.urls")),
+    path("analytics/", include("analytics.urls")),
 ]
 
 if settings.DEBUG:
