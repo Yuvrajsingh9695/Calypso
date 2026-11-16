@@ -22,13 +22,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("search/", include("services.urls")),
     path("", include("movies.urls")),
     path("users/", include("users.urls")),
     path("library/", include("library.urls")),
     path("tv/", include("tvshows.urls")),
     path("comments/", include("comments.urls")),
     path("recommendations/", include("recommendations.urls")),
-    path("", include("library.urls")),
     path("analytics/", include("analytics.urls")),
 ]
 

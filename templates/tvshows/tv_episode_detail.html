@@ -1,0 +1,692 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* =========================================================
+   EPISODE DETAIL PAGE
+========================================================= */
+
+.episode-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.episode-link:hover {
+    color: inherit;
+}
+
+.episode-hero {
+    background: #101827;
+    padding: 50px 0;
+}
+
+.episode-still-large {
+    width: 100%;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.episode-still-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #1e293b;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #94a3b8;
+}
+
+.episode-overview {
+    color: #cbd5e1;
+    line-height: 1.9;
+}
+
+.episode-section {
+    padding: 45px 0;
+}
+
+.episode-section-title {
+    font-weight: 750;
+    margin-bottom: 25px;
+}
+
+.episode-meta-card {
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 18px;
+    height: 100%;
+}
+
+.episode-meta-label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 7px;
+}
+
+.episode-meta-value {
+    color: #f8fafc;
+    font-weight: 650;
+}
+
+.episode-person-card {
+    height: 100%;
+    overflow: hidden;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.25s ease,
+                border-color 0.25s ease;
+}
+
+.episode-person-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
+
+.episode-person-image {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    background: #1e293b;
+}
+
+.episode-person-placeholder {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #1e293b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #94a3b8;
+}
+
+.episode-person-info {
+    padding: 12px;
+}
+
+.episode-person-name {
+    color: #f8fafc;
+    font-weight: 650;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.episode-person-role {
+    color: #38bdf8;
+    font-size: 0.8rem;
+    margin-bottom: 0;
+}
+
+.episode-person-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.episode-person-link:hover {
+    color: inherit;
+}
+
+.episode-navigation {
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+}
+
+.episode-navigation a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.episode-navigation a:hover {
+    color: #7dd3fc;
+}
+
+.episode-breadcrumb a {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.episode-breadcrumb a:hover {
+    color: #7dd3fc;
+}
+
+@media (max-width: 767px) {
+    .episode-hero {
+        padding: 35px 0;
+    }
+}
+</style>
+
+
+{% if api_error %}
+
+<!-- =========================================================
+     API ERROR
+========================================================= -->
+
+<section class="py-5">
+
+    <div class="container text-center">
+
+        <h2>Unable to load episode</h2>
+
+        <p class="text-secondary">
+            We couldn't retrieve this episode's information
+            from TMDB. Please try again later.
+        </p>
+
+        <a
+            href="{% url 'tv-season-detail' show_record.tmdb_id season_number %}"
+            class="btn btn-primary"
+        >
+            Back to Season
+        </a>
+
+    </div>
+
+</section>
+
+{% else %}
+
+
+<!-- =========================================================
+     EPISODE HERO
+========================================================= -->
+
+<section class="episode-hero text-white">
+
+    <div class="container">
+
+        <!-- BREADCRUMB NAVIGATION -->
+
+        <div class="episode-breadcrumb mb-4">
+
+            <a href="{% url 'tv-detail' show_record.tmdb_id %}">
+                {{ show_record.name }}
+            </a>
+
+            <i class="fa-solid fa-chevron-right mx-2 small text-secondary"></i>
+
+            <a
+                href="{% url 'tv-season-detail' show_record.tmdb_id season_number %}"
+            >
+                {{ season.name }}
+            </a>
+
+            <i class="fa-solid fa-chevron-right mx-2 small text-secondary"></i>
+
+            <span class="text-secondary">
+                Episode {{ episode.episode_number }}
+            </span>
+
+        </div>
+
+
+        <div class="row g-5 align-items-center">
+
+            <!-- EPISODE STILL -->
+
+            <div class="col-lg-7">
+
+                {% if episode.still_path %}
+
+                    <img
+                        src="https://image.tmdb.org/t/p/original{{ episode.still_path }}"
+                        alt="{{ episode.name }}"
+                        class="episode-still-large"
+                    >
+
+                {% else %}
+
+                    <div class="episode-still-placeholder">
+                        <i class="fa-solid fa-film fa-3x"></i>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- EPISODE INFORMATION -->
+
+            <div class="col-lg-5">
+
+                <p class="text-info fw-semibold mb-2">
+
+                    {{ season.name }}
+
+                    ·
+
+                    Episode {{ episode.episode_number }}
+
+                </p>
+
+
+                <h1 class="display-5 fw-bold mb-3">
+                    {{ episode.name }}
+                </h1>
+
+
+                <!-- RATING -->
+
+                {% if episode.vote_average %}
+
+                    <div class="mb-4">
+
+                        <span class="badge bg-warning text-dark fs-6">
+                            <i class="fa-solid fa-star me-1"></i>
+                            {{ episode.vote_average|floatformat:1 }}/10
+                        </span>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- OVERVIEW -->
+
+                {% if episode.overview %}
+
+                    <p class="episode-overview">
+                        {{ episode.overview }}
+                    </p>
+
+                {% else %}
+
+                    <p class="text-secondary">
+                        No episode overview available.
+                    </p>
+
+                {% endif %}
+
+
+                <!-- EPISODE META -->
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+
+                    {% if episode.air_date %}
+
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fa-regular fa-calendar me-1"></i>
+                            {{ episode.air_date }}
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if episode.runtime %}
+
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fa-regular fa-clock me-1"></i>
+                            {{ episode.runtime }} minutes
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     EPISODE INFORMATION
+========================================================= -->
+
+<section class="episode-section">
+
+    <div class="container">
+
+        <h2 class="episode-section-title">
+            Episode Information
+        </h2>
+
+        <div class="row g-3">
+
+            <div class="col-6 col-md-3">
+
+                <div class="episode-meta-card">
+
+                    <div class="episode-meta-label">
+                        Episode Number
+                    </div>
+
+                    <div class="episode-meta-value">
+                        {{ episode.episode_number }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="episode-meta-card">
+
+                    <div class="episode-meta-label">
+                        Season Number
+                    </div>
+
+                    <div class="episode-meta-value">
+                        {{ episode.season_number }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="episode-meta-card">
+
+                    <div class="episode-meta-label">
+                        Runtime
+                    </div>
+
+                    <div class="episode-meta-value">
+
+                        {% if episode.runtime %}
+                            {{ episode.runtime }} minutes
+                        {% else %}
+                            Not available
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-6 col-md-3">
+
+                <div class="episode-meta-card">
+
+                    <div class="episode-meta-label">
+                        Air Date
+                    </div>
+
+                    <div class="episode-meta-value">
+                        {{ episode.air_date|default:"Not available" }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GUEST STARS
+========================================================= -->
+
+{% if guest_stars %}
+
+<section class="episode-section bg-dark text-white">
+
+    <div class="container">
+
+        <h2 class="episode-section-title">
+            Guest Stars
+        </h2>
+
+        <div class="row g-4">
+
+            {% for person in guest_stars %}
+
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                    <a
+                        href="{% url 'person-detail' person.id %}"
+                        class="episode-person-link"
+                    >
+
+                        <div class="episode-person-card">
+
+                            {% if person.profile_path %}
+
+                                <img
+                                    src="https://image.tmdb.org/t/p/w185{{ person.profile_path }}"
+                                    alt="{{ person.name }}"
+                                    class="episode-person-image"
+                                    loading="lazy"
+                                >
+
+                            {% else %}
+
+                                <div class="episode-person-placeholder">
+                                    <i class="fa-solid fa-user fa-2x"></i>
+                                </div>
+
+                            {% endif %}
+
+
+                            <div class="episode-person-info">
+
+                                <h6 class="episode-person-name">
+                                    {{ person.name }}
+                                </h6>
+
+                                <p class="episode-person-role">
+                                    {{ person.character|default:"Guest Star" }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     EPISODE CREW
+========================================================= -->
+
+{% if crew_members %}
+
+<section class="episode-section">
+
+    <div class="container">
+
+        <h2 class="episode-section-title">
+            Episode Crew
+        </h2>
+
+        <div class="row g-3">
+
+            {% for person in crew_members %}
+
+                <div class="col-12 col-sm-6 col-lg-4">
+
+                    <div class="episode-meta-card">
+
+                        <h6 class="episode-meta-value mb-2">
+                            {{ person.name }}
+                        </h6>
+
+                        <p class="text-info small mb-0">
+                            {{ person.job|default:"Crew Member" }}
+
+                            {% if person.department %}
+                                · {{ person.department }}
+                            {% endif %}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     PREVIOUS AND NEXT EPISODES
+========================================================= -->
+
+<section class="episode-section bg-dark text-white">
+
+    <div class="container">
+
+        <h2 class="episode-section-title">
+            Navigate Episodes
+        </h2>
+
+        <div class="row g-3">
+
+            <!-- PREVIOUS EPISODE -->
+
+            <div class="col-md-6">
+
+                <div class="episode-navigation">
+
+                    {% if previous_episode %}
+
+                        <p class="text-secondary small mb-2">
+                            <i class="fa-solid fa-arrow-left me-1"></i>
+                            Previous Episode
+                        </p>
+
+                        <a
+                            href="{% url 'tv-episode-detail' show_record.tmdb_id season_number previous_episode.episode_number %}"
+                        >
+
+                            <h5 class="mb-1">
+                                {{ previous_episode.name }}
+                            </h5>
+
+                            <span class="small">
+                                Episode {{ previous_episode.episode_number }}
+                            </span>
+
+                        </a>
+
+                    {% else %}
+
+                        <p class="text-secondary mb-0">
+                            This is the first episode of the season.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- NEXT EPISODE -->
+
+            <div class="col-md-6">
+
+                <div class="episode-navigation">
+
+                    {% if next_episode %}
+
+                        <p class="text-secondary small mb-2">
+                            Next Episode
+                            <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </p>
+
+                        <a
+                            href="{% url 'tv-episode-detail' show_record.tmdb_id season_number next_episode.episode_number %}"
+                        >
+
+                            <h5 class="mb-1">
+                                {{ next_episode.name }}
+                            </h5>
+
+                            <span class="small">
+                                Episode {{ next_episode.episode_number }}
+                            </span>
+
+                        </a>
+
+                    {% else %}
+
+                        <p class="text-secondary mb-0">
+                            This is the last episode of the season.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BACK TO SEASON -->
+
+        <div class="text-center mt-4">
+
+            <a
+                href="{% url 'tv-season-detail' show_record.tmdb_id season_number %}"
+                class="btn btn-outline-light"
+            >
+                <i class="fa-solid fa-arrow-left me-2"></i>
+                Back to {{ season.name }}
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     EPISODE COMMENTS
+========================================================= -->
+
+<section class="episode-section">
+    <div class="container">
+        {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+    </div>
+</section>
+
+{% endif %}
+
+{% endblock %}

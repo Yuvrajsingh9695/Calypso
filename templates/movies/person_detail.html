@@ -1,0 +1,799 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+    {{ person.name }} | Calypso
+{% endblock %}
+
+{% block content %}
+
+<style>
+/* =========================================================
+   ACTOR PROFILE
+========================================================= */
+
+.actor-page {
+    background: #0b0f19;
+    color: #f1f5f9;
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+
+.actor-profile {
+    padding: 55px 0 45px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(135deg, #111827, #0b0f19 65%);
+}
+
+.actor-profile-image,
+.actor-image-placeholder {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 2 / 3;
+    border-radius: 14px;
+}
+
+.actor-profile-image {
+    object-fit: cover;
+    object-position: center top;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+}
+
+.actor-image-placeholder {
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+}
+
+.actor-name {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+    color: #fff;
+}
+
+.actor-known-for {
+    color: #38bdf8;
+    font-size: 1rem;
+    margin-bottom: 22px;
+}
+
+.actor-biography {
+    color: #cbd5e1;
+    font-size: 1rem;
+    line-height: 1.85;
+    white-space: pre-line;
+}
+
+/* =========================================================
+   PERSONAL INFORMATION
+========================================================= */
+
+.actor-info-card {
+    background: rgba(30,41,59,0.65);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 22px;
+    height: 100%;
+}
+
+.actor-info-card h5 {
+    font-size: 1.05rem;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.actor-info-item {
+    margin-bottom: 15px;
+}
+
+.actor-info-item:last-child {
+    margin-bottom: 0;
+}
+
+.actor-info-label {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+}
+
+.actor-info-value {
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   SECTION HEADINGS
+========================================================= */
+
+.actor-section {
+    padding-top: 45px;
+}
+
+.actor-section-heading {
+    font-size: 1.8rem;
+    font-weight: 750;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.actor-section-subtitle {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+   MOVIE CARDS
+========================================================= */
+
+.actor-movie-card {
+    height: 100%;
+    overflow: hidden;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.actor-movie-card:hover {
+    transform: translateY(-6px);
+    border-color: #38bdf8;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+
+.actor-movie-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    background: #1e293b;
+    transition: transform 0.3s ease;
+}
+
+.actor-movie-card:hover .actor-movie-poster {
+    transform: scale(1.035);
+}
+
+.actor-movie-poster-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+.actor-movie-poster-placeholder {
+    aspect-ratio: 2 / 3;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.actor-movie-card-body,
+.actor-tv-card-body {
+    padding: 13px;
+}
+
+.actor-movie-title,
+.actor-tv-title {
+    color: #f8fafc;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    font-weight: 650;
+    margin-bottom: 7px;
+}
+
+.actor-movie-year,
+.actor-tv-year {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    margin-bottom: 9px;
+}
+
+.actor-movie-character {
+    color: #38bdf8;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.actor-movie-rating {
+    display: inline-block;
+    background: rgba(250,204,21,0.13);
+    color: #facc15;
+    border-radius: 5px;
+    padding: 4px 7px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.actor-movie-link,
+.actor-tv-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.actor-movie-link:hover,
+.actor-tv-link:hover {
+    color: inherit;
+}
+
+/* =========================================================
+   TV SHOW CARDS
+========================================================= */
+
+.actor-tv-card {
+    height: 100%;
+    overflow: hidden;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.25s ease,
+                border-color 0.25s ease,
+                box-shadow 0.25s ease;
+}
+
+.actor-tv-card:hover {
+    transform: translateY(-6px);
+    border-color: #a78bfa;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+
+.actor-tv-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    background: #1e293b;
+    transition: transform 0.3s ease;
+}
+
+.actor-tv-card:hover .actor-tv-poster {
+    transform: scale(1.035);
+}
+
+.actor-tv-poster-wrapper {
+    overflow: hidden;
+}
+
+.actor-tv-poster-placeholder {
+    aspect-ratio: 2 / 3;
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.actor-tv-title {
+    margin-bottom: 7px;
+}
+
+.actor-tv-character {
+    color: #a78bfa;
+    font-size: 0.82rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.actor-empty-state {
+    padding: 45px 20px;
+    text-align: center;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: #94a3b8;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+    .actor-profile {
+        padding: 35px 0;
+    }
+
+    .actor-profile-image,
+    .actor-image-placeholder {
+        max-width: 210px;
+        margin: 0 auto 25px;
+    }
+
+    .actor-name {
+        font-size: 2rem;
+    }
+
+    .actor-section-heading {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+
+<div class="actor-page">
+
+    <!-- =====================================================
+         ACTOR PROFILE
+    ====================================================== -->
+
+    <section class="actor-profile">
+        <div class="container">
+            <div class="row g-5 align-items-start">
+
+                <!-- ACTOR IMAGE -->
+
+                <div class="col-md-4 col-lg-3 text-center">
+
+                    {% if person.profile_path %}
+
+                        <img
+                            src="https://image.tmdb.org/t/p/w500{{ person.profile_path }}"
+                            alt="{{ person.name }}"
+                            class="actor-profile-image"
+                            loading="lazy"
+                        >
+
+                    {% else %}
+
+                        <div class="actor-image-placeholder">
+                            <span>No Image Available</span>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ACTOR DETAILS -->
+
+                <div class="col-md-8 col-lg-9">
+
+                    <h1 class="actor-name">
+                        {{ person.name }}
+                    </h1>
+
+                    {% if person.known_for_department %}
+
+                        <p class="actor-known-for">
+                            {{ person.known_for_department }}
+                        </p>
+
+                    {% endif %}
+
+
+                    <!-- BIOGRAPHY -->
+
+                    <h5 class="fw-bold text-white mb-3">
+                        Biography
+                    </h5>
+
+                    {% if person.biography %}
+
+                        <p class="actor-biography">
+                            {{ person.biography }}
+                        </p>
+
+                    {% else %}
+
+                        <p class="text-secondary">
+                            No biography is currently available.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- =====================================================
+         PERSONAL INFORMATION
+    ====================================================== -->
+
+    <section class="container actor-section">
+
+        <div class="row g-4">
+
+            <div class="col-12">
+                <h2 class="actor-section-heading">
+                    Personal Information
+                </h2>
+            </div>
+
+
+            <!-- PERSONAL DETAILS -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="actor-info-card">
+
+                    <h5>Personal Details</h5>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Known For
+                        </span>
+
+                        <span class="actor-info-value">
+                            {{ person.known_for_department|default:"Not available" }}
+                        </span>
+
+                    </div>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Birthday
+                        </span>
+
+                        <span class="actor-info-value">
+                            {{ person.birthday|default:"Not available" }}
+                        </span>
+
+                    </div>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Place of Birth
+                        </span>
+
+                        <span class="actor-info-value">
+                            {{ person.place_of_birth|default:"Not available" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADDITIONAL DETAILS -->
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="actor-info-card">
+
+                    <h5>Additional Details</h5>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Also Known As
+                        </span>
+
+                        <span class="actor-info-value">
+
+                            {% if person.also_known_as %}
+                                {{ person.also_known_as|join:", " }}
+                            {% else %}
+                                Not available
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Gender
+                        </span>
+
+                        <span class="actor-info-value">
+
+                            {% if person.gender == 1 %}
+                                Female
+                            {% elif person.gender == 2 %}
+                                Male
+                            {% else %}
+                                Not available
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                    <div class="actor-info-item">
+
+                        <span class="actor-info-label">
+                            Department
+                        </span>
+
+                        <span class="actor-info-value">
+                            {{ person.known_for_department|default:"Not available" }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ACTOR MOVIE FILMOGRAPHY
+    ====================================================== -->
+
+    <section class="container actor-section">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+            <div>
+
+                <h2 class="actor-section-heading">
+                    Movies
+                </h2>
+
+                <p class="actor-section-subtitle mb-0">
+                    Movies featuring {{ person.name }}
+                </p>
+
+            </div>
+
+            <span class="badge bg-secondary fs-6">
+                {{ movies|length }} Movies
+            </span>
+
+        </div>
+
+
+        {% if movies %}
+
+            <div class="row g-4">
+
+                {% for movie in movies %}
+
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                        <a
+                            href="{% url 'movie-detail' movie.id %}"
+                            class="actor-movie-link"
+                        >
+
+                            <div class="actor-movie-card">
+
+                                <!-- MOVIE POSTER -->
+
+                                <div class="actor-movie-poster-wrapper">
+
+                                    {% if movie.poster_path %}
+
+                                        <img
+                                            src="https://image.tmdb.org/t/p/w342{{ movie.poster_path }}"
+                                            alt="{{ movie.title }}"
+                                            class="actor-movie-poster"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="actor-movie-poster-placeholder">
+                                            No Poster
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- MOVIE INFORMATION -->
+
+                                <div class="actor-movie-card-body">
+
+                                    <h6 class="actor-movie-title">
+                                        {{ movie.title }}
+                                    </h6>
+
+                                    <p class="actor-movie-year">
+
+                                        {% if movie.release_date %}
+                                            {{ movie.release_date|slice:":4" }}
+                                        {% else %}
+                                            Release date unknown
+                                        {% endif %}
+
+                                    </p>
+
+                                    {% if movie.character %}
+
+                                        <p class="actor-movie-character">
+                                            {{ movie.character }}
+                                        </p>
+
+                                    {% endif %}
+
+                                    {% if movie.vote_average %}
+
+                                        <span class="actor-movie-rating">
+                                            ★ {{ movie.vote_average|floatformat:1 }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="actor-empty-state">
+
+                <h5 class="text-white mb-2">
+                    No Movies Found
+                </h5>
+
+                <p class="mb-0">
+                    We couldn't find any movie credits for {{ person.name }}.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =====================================================
+         ACTOR TV SHOW FILMOGRAPHY
+    ====================================================== -->
+
+    <section class="container actor-section">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+            <div>
+
+                <h2 class="actor-section-heading">
+                    TV Shows
+                </h2>
+
+                <p class="actor-section-subtitle mb-0">
+                    Television shows featuring {{ person.name }}
+                </p>
+
+            </div>
+
+            <span class="badge bg-secondary fs-6">
+                {{ tv_shows|length }} TV Shows
+            </span>
+
+        </div>
+
+
+        {% if tv_shows %}
+
+            <div class="row g-4">
+
+                {% for show in tv_shows %}
+
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                        <a
+                            href="{% url 'tv-detail' show.id %}"
+                            class="actor-tv-link"
+                        >
+
+                            <div class="actor-tv-card">
+
+                                <!-- TV SHOW POSTER -->
+
+                                <div class="actor-tv-poster-wrapper">
+
+                                    {% if show.poster_path %}
+
+                                        <img
+                                            src="https://image.tmdb.org/t/p/w342{{ show.poster_path }}"
+                                            alt="{{ show.name }}"
+                                            class="actor-tv-poster"
+                                            loading="lazy"
+                                        >
+
+                                    {% else %}
+
+                                        <div class="actor-tv-poster-placeholder">
+                                            No Poster
+                                        </div>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <!-- TV SHOW INFORMATION -->
+
+                                <div class="actor-tv-card-body">
+
+                                    <h6 class="actor-tv-title">
+                                        {{ show.name }}
+                                    </h6>
+
+                                    <p class="actor-tv-year">
+
+                                        {% if show.first_air_date %}
+                                            {{ show.first_air_date|slice:":4" }}
+                                        {% else %}
+                                            Release date unknown
+                                        {% endif %}
+
+                                    </p>
+
+                                    {% if show.character %}
+
+                                        <p class="actor-tv-character">
+                                            {{ show.character }}
+                                        </p>
+
+                                    {% endif %}
+
+                                    {% if show.vote_average %}
+
+                                        <span class="actor-movie-rating">
+                                            ★ {{ show.vote_average|floatformat:1 }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="actor-empty-state">
+
+                <h5 class="text-white mb-2">
+                    No TV Shows Found
+                </h5>
+
+                <p class="mb-0">
+                    We couldn't find any TV show credits for {{ person.name }}.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

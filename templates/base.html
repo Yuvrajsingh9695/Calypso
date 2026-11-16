@@ -1,3 +1,4 @@
+
 {% load static %}
 <!doctype html>
 <html lang="en">
@@ -5,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Calypso</title>
+    <title>{% block title %}Calypso{% endblock %}</title>
 
     <!-- Bootstrap -->
     <link
@@ -26,6 +27,45 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
+
+    <style>
+      .global-search {
+        flex: 1 1 250px;
+        max-width: 430px;
+        min-width: 200px;
+      }
+
+      .global-search .form-control {
+        background-color: #212529;
+        color: #fff;
+        border-color: #495057;
+      }
+
+      .global-search .form-control::placeholder {
+        color: #adb5bd;
+      }
+
+      .global-search .form-control:focus {
+        background-color: #212529;
+        color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.2);
+      }
+
+      @media (max-width: 991.98px) {
+        .global-search {
+          order: 3;
+          flex: 1 0 100%;
+          max-width: 100%;
+          margin: 12px 0;
+        }
+
+        .navbar-actions {
+          order: 2;
+          flex-wrap: wrap;
+        }
+      }
+    </style>
   </head>
 
   <body>
@@ -33,74 +73,103 @@
 
     <header>
       <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-        <div class="container">
+        <div class="container flex-wrap">
+
           <!-- Brand -->
-          <a class="navbar-brand" href="/">
+          <a class="navbar-brand order-1" href="/">
             <img
               src="{% static 'images/final-final-logo.png' %}"
               alt="Calypso"
             />
           </a>
 
+          <!-- Global Search -->
+          <form
+            method="get"
+            action="{% url 'global-search' %}"
+            class="global-search d-flex mx-lg-4 my-2 my-lg-0 order-2"
+            role="search"
+          >
+            <div class="input-group">
+              <input
+                type="search"
+                name="q"
+                value="{{ request.GET.q|default:'' }}"
+                class="form-control"
+                placeholder="Search movies, TV shows, actors..."
+                aria-label="Search movies, TV shows and actors"
+                required
+              />
+
+              <button class="btn btn-primary" type="submit" aria-label="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </div>
+          </form>
+
           <!-- Right Side Navigation -->
+          <div class="navbar-actions ms-auto d-flex align-items-center gap-2 order-3">
 
-          <div class="ms-auto d-flex align-items-center gap-2">
             <!-- TV Shows -->
-
             <a href="{% url 'tv-shows' %}" class="btn btn-outline-light">
-              Tv Shows
+              TV Shows
             </a>
 
             {% if request.user.is_authenticated and request.user.is_staff %}
-            <a href="/analytics/" class="nav-link text-light px-2">
-              Analytics
-            </a>
-            {% endif %} {% if user.is_authenticated %}
+              <a href="/analytics/" class="nav-link text-light px-2">
+                Analytics
+              </a>
+            {% endif %}
 
-            <a
-              href="{% url 'profile' %}"
-              class="d-flex align-items-center text-decoration-none text-light me-3"
-            >
-              {% if user.profile_picture %}
+            {% if user.is_authenticated %}
 
-              <img
-                src="{{ user.profile_picture.url }}"
-                alt="{{ user.username }}"
-                class="rounded-circle me-2"
-                width="35"
-                height="35"
-                style="object-fit: cover"
-              />
-
-              {% else %}
-
-              <div
-                class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
-                style="width: 35px; height: 35px"
+              <!-- User Profile -->
+              <a
+                href="{% url 'profile' %}"
+                class="d-flex align-items-center text-decoration-none text-light me-3"
               >
-                <i class="fa-solid fa-user text-light"></i>
-              </div>
+                {% if user.profile_picture %}
 
-              {% endif %}
+                  <img
+                    src="{{ user.profile_picture.url }}"
+                    alt="{{ user.username }}"
+                    class="rounded-circle me-2"
+                    width="35"
+                    height="35"
+                    style="object-fit: cover"
+                  />
 
-              <span> {{ user.username }} </span>
-            </a>
+                {% else %}
 
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
-              Dashboard
-            </a>
+                  <div
+                    class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
+                    style="width: 35px; height: 35px"
+                  >
+                    <i class="fa-solid fa-user text-light"></i>
+                  </div>
 
-            <a href="{% url 'logout' %}" class="btn btn-outline-light">
-              Logout
-            </a>
+                {% endif %}
+
+                <span>{{ user.username }}</span>
+              </a>
+
+              <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
+                Dashboard
+              </a>
+
+              <a href="{% url 'logout' %}" class="btn btn-outline-light">
+                Logout
+              </a>
 
             {% else %}
 
-            <a href="{% url 'login' %}" class="btn btn-outline-light">
-              Login
-            </a>
+              <a href="{% url 'login' %}" class="btn btn-outline-light">
+                Login
+              </a>
 
-            <a href="{% url 'register' %}" class="btn btn-primary"> Sign Up </a>
+              <a href="{% url 'register' %}" class="btn btn-primary">
+                Sign Up
+              </a>
 
             {% endif %}
           </div>
@@ -114,43 +183,47 @@
       class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
       style="z-index: 9999"
     >
-      {% if messages %} {% for message in messages %}
+      {% if messages %}
+        {% for message in messages %}
 
-      <div
-        class="toast align-items-center text-bg-dark border-0 mb-2"
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        data-bs-autohide="true"
-        data-bs-delay="4000"
-      >
-        <div class="d-flex">
-          <div class="toast-body">
-            {% if message.tags == "success" %}
+          <div
+            class="toast align-items-center text-bg-dark border-0 mb-2"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            data-bs-autohide="true"
+            data-bs-delay="4000"
+          >
+            <div class="d-flex">
+              <div class="toast-body">
+                {% if message.tags == "success" %}
 
-            <i class="fa-solid fa-circle-check text-success me-2"></i>
+                  <i class="fa-solid fa-circle-check text-success me-2"></i>
 
-            {% elif message.tags == "error" %}
+                {% elif message.tags == "error" %}
 
-            <i class="fa-solid fa-circle-exclamation text-danger me-2"></i>
+                  <i class="fa-solid fa-circle-exclamation text-danger me-2"></i>
 
-            {% else %}
+                {% else %}
 
-            <i class="fa-solid fa-circle-info text-info me-2"></i>
+                  <i class="fa-solid fa-circle-info text-info me-2"></i>
 
-            {% endif %} {{ message }}
+                {% endif %}
+
+                {{ message }}
+              </div>
+
+              <button
+                type="button"
+                class="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast"
+                aria-label="Close"
+              ></button>
+            </div>
           </div>
 
-          <button
-            type="button"
-            class="btn-close btn-close-white me-2 m-auto"
-            data-bs-dismiss="toast"
-            aria-label="Close"
-          ></button>
-        </div>
-      </div>
-
-      {% endfor %} {% endif %}
+        {% endfor %}
+      {% endif %}
     </div>
 
     <!-- ================= PAGE CONTENT ================= -->
@@ -162,8 +235,8 @@
     <footer class="bg-dark text-light py-5">
       <div class="container">
         <div class="row">
-          <!-- Brand -->
 
+          <!-- Brand -->
           <div class="col-md-6 mb-4">
             <h4>Calypso</h4>
 
@@ -174,13 +247,14 @@
           </div>
 
           <!-- Quick Links -->
-
           <div class="col-md-3 mb-4">
             <h5>Quick Links</h5>
 
             <ul class="list-unstyled">
               <li>
-                <a href="/" class="text-light text-decoration-none"> Home </a>
+                <a href="/" class="text-light text-decoration-none">
+                  Home
+                </a>
               </li>
 
               <li>
@@ -201,9 +275,8 @@
         <hr />
 
         <!-- Copyright -->
-
         <div class="text-center text-secondary">
-          <small> © 2026 Calypso. All rights reserved. </small>
+          <small>© 2026 Calypso. All rights reserved.</small>
         </div>
       </div>
     </footer>
@@ -229,7 +302,6 @@
 
         toastElements.forEach(function (toastElement) {
           const toast = new bootstrap.Toast(toastElement);
-
           toast.show();
         });
       });

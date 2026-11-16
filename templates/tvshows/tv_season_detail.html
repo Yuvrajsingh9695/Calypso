@@ -1,0 +1,513 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* =========================================================
+   TV SEASON DETAIL PAGE
+========================================================= */
+
+.season-hero {
+    background: #101827;
+    padding: 55px 0;
+}
+
+.season-poster {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.season-poster-placeholder {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 2 / 3;
+    background: #1e293b;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+}
+
+.season-overview {
+    color: #cbd5e1;
+    line-height: 1.8;
+}
+
+.season-section {
+    padding: 55px 0;
+}
+
+/* =========================================================
+   EPISODE CARDS
+========================================================= */
+
+.episode-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.episode-link:hover {
+    color: inherit;
+}
+
+.episode-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.episode-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
+
+.episode-still {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    background: #1e293b;
+}
+
+.episode-still-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1e293b;
+    color: #94a3b8;
+}
+
+.episode-body {
+    padding: 18px;
+    flex-grow: 1;
+}
+
+.episode-number {
+    color: #38bdf8;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.episode-title {
+    color: #f8fafc;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.episode-meta {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.episode-overview {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.season-back-link {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.season-back-link:hover {
+    color: #7dd3fc;
+}
+
+@media (max-width: 576px) {
+
+    .season-poster,
+    .season-poster-placeholder {
+        max-width: 220px;
+    }
+
+    .season-hero {
+        padding: 35px 0;
+    }
+}
+</style>
+
+
+{% if api_error %}
+
+<!-- =========================================================
+     API ERROR
+========================================================= -->
+
+<section class="py-5">
+
+    <div class="container text-center">
+
+        <h2>Unable to load season</h2>
+
+        <p class="text-secondary">
+            We couldn't retrieve the season information from TMDB.
+            Please try again later.
+        </p>
+
+        <a
+            href="{% url 'tv-detail' show_record.tmdb_id %}"
+            class="btn btn-primary"
+        >
+            Back to TV Show
+        </a>
+
+    </div>
+
+</section>
+
+{% else %}
+
+
+<!-- =========================================================
+     SEASON HERO
+========================================================= -->
+
+<section class="season-hero text-white">
+
+    <div class="container">
+
+        <!-- BACK TO TV SHOW -->
+
+        <div class="mb-4">
+
+            <a
+                href="{% url 'tv-detail' show_record.tmdb_id %}"
+                class="season-back-link"
+            >
+                <i class="fa-solid fa-arrow-left me-2"></i>
+                Back to {{ show_record.name }}
+            </a>
+
+        </div>
+
+
+        <div class="row g-5 align-items-center">
+
+            <!-- SEASON POSTER -->
+
+            <div class="col-md-4 text-center">
+
+                {% if season.poster_path %}
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w500{{ season.poster_path }}"
+                        alt="{{ season.name }}"
+                        class="season-poster"
+                    >
+
+                {% else %}
+
+                    <div class="season-poster-placeholder mx-auto">
+                        <i class="fa-solid fa-tv fa-3x"></i>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- SEASON INFORMATION -->
+
+            <div class="col-md-8">
+
+                <h1 class="display-4 fw-bold mb-3">
+                    {{ show_record.name }}
+                </h1>
+
+                <h2 class="h3 text-info mb-4">
+                    {{ season.name }}
+                </h2>
+
+
+                <!-- SEASON METADATA -->
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+
+                    {% if season.episode_count %}
+
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fa-solid fa-film me-1"></i>
+                            {{ season.episode_count }} Episodes
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fa-solid fa-film me-1"></i>
+                            {{ episodes|length }} Episodes
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if season.air_date %}
+
+                        <span class="badge bg-secondary fs-6">
+                            <i class="fa-regular fa-calendar me-1"></i>
+                            {{ season.air_date }}
+                        </span>
+
+                    {% endif %}
+
+
+                    {% if season.vote_average %}
+
+                        <span class="badge bg-warning text-dark fs-6">
+                            <i class="fa-solid fa-star me-1"></i>
+                            {{ season.vote_average|floatformat:1 }}/10
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- SEASON OVERVIEW -->
+
+                {% if season.overview %}
+
+                    <p class="lead season-overview">
+                        {{ season.overview }}
+                    </p>
+
+                {% else %}
+
+                    <p class="text-secondary">
+                        No season overview available.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     EPISODES
+========================================================= -->
+
+<section class="season-section">
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h2 class="fw-bold">
+                Episodes
+            </h2>
+
+            <p class="text-secondary">
+                Explore all episodes from {{ season.name }}
+                of {{ show_record.name }}.
+            </p>
+
+        </div>
+
+
+        {% if episodes %}
+
+            <div class="row g-4">
+
+                {% for episode in episodes %}
+
+                    <div class="col-12 col-md-6 col-lg-4">
+
+                        <!-- CLICKABLE EPISODE CARD -->
+
+                        <a
+                            href="{% url 'tv-episode-detail' show_record.tmdb_id season_number episode.episode_number %}"
+                            class="episode-link"
+                            aria-label="View episode {{ episode.episode_number }}: {{ episode.name }}"
+                        >
+
+                            <div class="episode-card">
+
+                                <!-- EPISODE STILL -->
+
+                                {% if episode.still_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w780{{ episode.still_path }}"
+                                        alt="{{ episode.name }}"
+                                        class="episode-still"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="episode-still-placeholder">
+                                        <i class="fa-solid fa-film fa-2x"></i>
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- EPISODE INFORMATION -->
+
+                                <div class="episode-body">
+
+                                    <p class="episode-number">
+                                        Season {{ episode.season_number }}
+                                        · Episode {{ episode.episode_number }}
+                                    </p>
+
+
+                                    <h3 class="episode-title">
+                                        {{ episode.name }}
+                                    </h3>
+
+
+                                    <!-- AIR DATE AND RUNTIME -->
+
+                                    <div class="episode-meta">
+
+                                        {% if episode.air_date %}
+
+                                            <span>
+                                                <i class="fa-regular fa-calendar me-1"></i>
+                                                {{ episode.air_date }}
+                                            </span>
+
+                                        {% endif %}
+
+
+                                        {% if episode.runtime %}
+
+                                            <span class="ms-3">
+                                                <i class="fa-regular fa-clock me-1"></i>
+                                                {{ episode.runtime }} min
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+
+                                    <!-- EPISODE RATING -->
+
+                                    {% if episode.vote_average %}
+
+                                        <p class="text-warning small mb-3">
+
+                                            <i class="fa-solid fa-star me-1"></i>
+
+                                            {{ episode.vote_average|floatformat:1 }}/10
+
+                                        </p>
+
+                                    {% endif %}
+
+
+                                    <!-- EPISODE OVERVIEW -->
+
+                                    {% if episode.overview %}
+
+                                        <p class="episode-overview mb-0">
+                                            {{ episode.overview|truncatewords:35 }}
+                                        </p>
+
+                                    {% else %}
+
+                                        <p class="text-secondary small mb-0">
+                                            No episode description available.
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <!-- NO EPISODES -->
+
+            <div class="text-center py-5">
+
+                <i class="fa-solid fa-film fa-3x text-secondary mb-3"></i>
+
+                <h4>No episodes available</h4>
+
+                <p class="text-secondary">
+                    TMDB does not currently provide episode information
+                    for this season.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     BACK TO TV SHOW
+========================================================= -->
+
+<section class="pb-5">
+
+    <div class="container text-center">
+
+        <a
+            href="{% url 'tv-detail' show_record.tmdb_id %}"
+            class="btn btn-outline-light"
+        >
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Back to {{ show_record.name }}
+        </a>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SEASON COMMENTS
+========================================================= -->
+
+<section class="season-section">
+    <div class="container">
+        {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+    </div>
+</section>
+
+{% endif %}
+
+{% endblock %}

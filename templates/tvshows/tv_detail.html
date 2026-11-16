@@ -3,337 +3,1390 @@
 
 {% block content %}
 
-<!-- ========================================================= -->
-<!-- TV SHOW HERO SECTION -->
-<!-- ========================================================= -->
+<style>
+/* =========================================================
+   TV SHOW DETAIL PAGE
+========================================================= */
 
-<section class="bg-dark text-white py-5">
-  <div class="container">
-    <div class="row g-5 align-items-center">
+.tv-hero {
+    position: relative;
+    background: #101827;
+    background-size: cover;
+    background-position: center top;
+}
 
-      <!-- POSTER -->
-      <div class="col-md-4">
-        {% if show.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
-            class="img-fluid rounded shadow"
-            alt="{{ show.name }}"
-          >
-        {% else %}
-          <div
-            class="bg-secondary rounded d-flex align-items-center justify-content-center"
-            style="height: 500px;"
-          >
-            No Poster Available
-          </div>
-        {% endif %}
-      </div>
+.tv-poster {
+    width: 100%;
+    max-width: 380px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.45);
+}
 
-      <!-- SHOW INFORMATION -->
-      <div class="col-md-8">
+.tv-poster-placeholder {
+    width: 100%;
+    max-width: 380px;
+    height: 520px;
+    background: #1e293b;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+}
 
-        <h1 class="display-4 fw-bold">
-          {{ show.name }}
-        </h1>
+.tv-overview {
+    color: #cbd5e1;
+    line-height: 1.8;
+}
 
-        <!-- AIR DATES -->
-        {% if show.first_air_date %}
-          <p class="text-secondary">
-            {{ show.first_air_date|date:"Y" }}
+.tv-section {
+    padding: 55px 0;
+}
 
-            {% if show.last_air_date %}
-              - {{ show.last_air_date|date:"F d, Y" }}
-            {% endif %}
-          </p>
-        {% endif %}
+.tv-section-title {
+    font-weight: 750;
+    margin-bottom: 25px;
+}
 
-        <!-- RATING AND STATUS -->
-        <div class="mb-3">
-          <span class="badge bg-warning text-dark">
-            ⭐ {{ show.vote_average|floatformat:1 }}
-          </span>
+.tv-info-list .list-group-item {
+    background: #151c2b;
+    color: #e2e8f0;
+    border-color: rgba(255,255,255,0.08);
+    padding: 13px 16px;
+}
 
-          {% if show.status %}
-            <span class="badge bg-secondary ms-2">
-              {{ show.status }}
-            </span>
-          {% endif %}
-        </div>
+.tv-info-label {
+    color: #94a3b8;
+}
 
-        <!-- WATCHLIST AND COLLECTION -->
-        {% if user.is_authenticated %}
-          <div class="d-flex flex-wrap gap-2 mb-4">
+/* Clickable season cards */
+.tv-season-link {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
 
-            {% if in_watchlist %}
-              <form
-                method="POST"
-                action="{% url 'remove-tv-watchlist' show.id %}"
-                class="d-inline"
-              >
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline-danger">
-                  <i class="fa-solid fa-bookmark me-1"></i>
-                  Remove from Watchlist
-                </button>
-              </form>
-            {% else %}
-              <form
-                method="POST"
-                action="{% url 'add-tv-watchlist' show.id %}"
-                class="d-inline"
-              >
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">
-                  <i class="fa-solid fa-bookmark me-1"></i>
-                  Add to Watchlist
-                </button>
-              </form>
-            {% endif %}
+.tv-season-link:hover {
+    color: inherit;
+}
 
-            <a
-              href="{% url 'tv-collection-selector' show.id %}"
-              class="btn btn-outline-light"
-            >
-              <i class="fa-solid fa-layer-group me-1"></i>
-              Add to Collection
-            </a>
+.tv-season-card,
+.tv-cast-card {
+    height: 100%;
+    overflow: hidden;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+}
 
-          </div>
-        {% else %}
-          <div class="d-flex flex-wrap gap-2 mb-4">
+.tv-season-card:hover,
+.tv-cast-card:hover {
+    transform: translateY(-5px);
+    border-color: #38bdf8;
+}
 
-            <a href="{% url 'login' %}" class="btn btn-outline-light">
-              <i class="fa-solid fa-bookmark me-1"></i>
-              Login to Add to Watchlist
-            </a>
+.tv-season-poster,
+.tv-cast-image {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+    background: #1e293b;
+}
 
-            <a href="{% url 'login' %}" class="btn btn-outline-light">
-              <i class="fa-solid fa-layer-group me-1"></i>
-              Login to Add to Collection
-            </a>
+.tv-season-placeholder,
+.tv-cast-placeholder {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #1e293b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #94a3b8;
+}
 
-          </div>
-        {% endif %}
+.tv-season-body,
+.tv-cast-info {
+    padding: 13px;
+}
 
-        <!-- GENRES -->
-        {% if show.genre_list %}
-          <p>
-            <strong>Genres:</strong>
-            {% for genre in show.genre_list %}
-              <span class="badge bg-secondary me-1">
-                {{ genre }}
-              </span>
-            {% endfor %}
-          </p>
-        {% endif %}
+.tv-season-title,
+.tv-cast-name {
+    color: #f8fafc;
+    font-size: 0.95rem;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
 
-        <!-- CREATORS -->
-        {% if show.creator_list %}
-          <p>
-            <strong>Created By:</strong>
-            {{ show.creator_list|join:", " }}
-          </p>
-        {% endif %}
+.tv-season-meta,
+.tv-cast-character {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    margin-bottom: 8px;
+}
 
-        <!-- OVERVIEW -->
-        {% if show.overview %}
-          <p class="lead">
-            {{ show.overview }}
-          </p>
-        {% else %}
-          <p class="text-secondary">
-            No overview available for this show.
-          </p>
-        {% endif %}
+.tv-cast-character {
+    color: #38bdf8;
+}
 
-        <!-- TRAILER -->
-        <div class="mt-4">
-          <a
-            href="{{ show.trailer_search_url }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-danger"
-          >
-            <i class="fa-brands fa-youtube me-2"></i>
-            Watch Trailer
-          </a>
-        </div>
+.tv-cast-link {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+}
 
-      </div>
-    </div>
-  </div>
-</section>
+.tv-cast-link:hover {
+    color: inherit;
+}
+
+.tv-network-logo {
+    max-width: 110px;
+    max-height: 55px;
+    object-fit: contain;
+    background: white;
+    border-radius: 6px;
+    padding: 7px;
+}
+
+.tv-metadata-value {
+    color: #e2e8f0;
+}
+
+.tv-image-gallery img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.tv-keyword {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #263449;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    margin: 3px;
+}
+
+.tv-external-link {
+    color: #38bdf8;
+    text-decoration: none;
+}
+
+.tv-external-link:hover {
+    color: #7dd3fc;
+    text-decoration: underline;
+}
+
+/* Country-specific certification cards */
+.tv-release-card {
+    height: 100%;
+    padding: 20px;
+    background: #151c2b;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tv-release-card:hover {
+    transform: translateY(-3px);
+    border-color: #38bdf8;
+}
+
+.tv-release-country {
+    color: #f8fafc;
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.tv-release-label {
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+.tv-release-date {
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.tv-release-certification {
+    display: inline-block;
+    padding: 6px 11px;
+    border-radius: 7px;
+    background: rgba(56,189,248,0.14);
+    color: #7dd3fc;
+    font-weight: 700;
+}
+
+@media (max-width: 576px) {
+    .tv-poster {
+        max-width: 280px;
+    }
+
+    .tv-poster-placeholder {
+        max-width: 280px;
+        height: 400px;
+    }
+}
+</style>
 
 
-<!-- ========================================================= -->
-<!-- SHOW INFORMATION -->
-<!-- ========================================================= -->
+{% if api_error %}
+
+<!-- =========================================================
+     API ERROR
+========================================================= -->
 
 <section class="py-5">
-  <div class="container">
-    <div class="row">
+    <div class="container text-center">
 
-      <!-- BASIC INFORMATION -->
-      <div class="col-md-6">
-        <h3>Show Information</h3>
+        <h2>Unable to load TV show</h2>
 
-        <ul class="list-group">
+        <p class="text-secondary">
+            We couldn't retrieve the latest information from TMDB.
+            Please try again later.
+        </p>
 
-          <li class="list-group-item">
-            <strong>Seasons:</strong>
-            {{ show.number_of_seasons|default_if_none:"Not available" }}
-          </li>
+        <a href="{% url 'tv-shows' %}" class="btn btn-primary">
+            Back to TV Shows
+        </a>
 
-          <li class="list-group-item">
-            <strong>Episodes:</strong>
-            {{ show.number_of_episodes|default_if_none:"Not available" }}
-          </li>
-
-          <li class="list-group-item">
-            <strong>Language:</strong>
-            {% if show.original_language %}
-              {{ show.original_language|upper }}
-            {% else %}
-              Not available
-            {% endif %}
-          </li>
-
-          <li class="list-group-item">
-            <strong>Votes:</strong>
-            {{ show.vote_count }}
-          </li>
-
-          {% if show.country_list %}
-            <li class="list-group-item">
-              <strong>Country:</strong>
-              {{ show.country_list|join:", " }}
-            </li>
-          {% endif %}
-
-          <li class="list-group-item">
-            <strong>Popularity:</strong>
-            {{ show.popularity|floatformat:1 }}
-          </li>
-
-          <li class="list-group-item">
-            <strong>In Production:</strong>
-            {% if show.in_production %}
-              Yes
-            {% else %}
-              No
-            {% endif %}
-          </li>
-
-        </ul>
-      </div>
-
-      <!-- ADDITIONAL INFORMATION -->
-      <div class="col-md-6">
-
-        {% if show.tagline %}
-          <h3>Tagline</h3>
-          <p>{{ show.tagline }}</p>
-        {% endif %}
-
-        {% if show.production_company_list %}
-          <h3 class="mt-4">Production</h3>
-          <p>{{ show.production_company_list|join:", " }}</p>
-        {% endif %}
-
-        {% if show.original_name and show.original_name != show.name %}
-          <h3 class="mt-4">Original Name</h3>
-          <p>{{ show.original_name }}</p>
-        {% endif %}
-
-        {% if show.last_air_date %}
-          <h3 class="mt-4">Last Air Date</h3>
-          <p>{{ show.last_air_date|date:"F d, Y" }}</p>
-        {% endif %}
-
-      </div>
     </div>
-  </div>
 </section>
 
+{% else %}
 
-<!-- ========================================================= -->
-<!-- V10 RECOMMENDATIONS -->
-<!-- ========================================================= -->
 
-{% if similar_shows %}
-<section class="py-5 bg-dark text-white">
-  <div class="container">
+<!-- =========================================================
+     HERO SECTION
+========================================================= -->
 
-    <div class="mb-4">
-      <h2 class="fw-bold mb-2">Similar TV Shows</h2>
-      <p class="text-secondary mb-0">
-        Discover shows recommended based on similar content and features.
-      </p>
-    </div>
+<section
+    class="tv-hero text-white py-5"
+    {% if show.backdrop_path %}
+    style="
+        background-image:
+            linear-gradient(
+                to right,
+                rgba(16,24,39,0.97),
+                rgba(16,24,39,0.82)
+            ),
+            linear-gradient(
+                to top,
+                #101827,
+                transparent
+            ),
+            url('https://image.tmdb.org/t/p/original{{ show.backdrop_path }}');
+    "
+    {% endif %}
+>
 
-    <div class="row g-4">
+    <div class="container">
 
-      {% for item in similar_shows %}
-        <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+        <div class="row g-5 align-items-center">
 
-          <a
-            href="{% url 'tv-detail' item.show.tmdb_id %}"
-            class="text-decoration-none text-white"
-          >
+            <!-- POSTER -->
 
-            {% if item.poster_url %}
-              <img
-                src="{{ item.poster_url }}"
-                class="img-fluid rounded shadow mb-2 w-100"
-                alt="{{ item.show.name }}"
-                loading="lazy"
-                style="aspect-ratio: 2 / 3; object-fit: cover;"
-              >
-            {% else %}
-              <div
-                class="bg-secondary rounded d-flex align-items-center justify-content-center mb-2"
-                style="aspect-ratio: 2 / 3;"
-              >
-                No Poster Available
-              </div>
-            {% endif %}
+            <div class="col-md-4 text-center">
 
-            <h6 class="fw-semibold mt-2 mb-2">
-              {{ item.show.name }}
-            </h6>
+                {% if show.poster_path %}
 
-          </a>
+                    <img
+                        src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+                        class="tv-poster"
+                        alt="{{ show.name }}"
+                    >
 
-          <p class="small text-warning mb-2">
-            <i class="fa-solid fa-star"></i>
-            {{ item.show.vote_average|floatformat:1 }}
-          </p>
+                {% else %}
 
-          {% if item.reason %}
-            <p class="small text-secondary mb-0">
-              {{ item.reason }}
-            </p>
-          {% endif %}
+                    <div class="tv-poster-placeholder">
+                        No Poster Available
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- MAIN INFORMATION -->
+
+            <div class="col-md-8">
+
+                <h1 class="display-4 fw-bold mb-3">
+                    {{ show.name }}
+                </h1>
+
+                {% if show.original_name and show.original_name != show.name %}
+                    <p class="text-secondary">
+                        {{ show.original_name }}
+                    </p>
+                {% endif %}
+
+                <!-- AIR DATES -->
+
+                <p class="text-secondary mb-3">
+
+                    {% if show.first_air_date %}
+                        {{ show.first_air_date|slice:":4" }}
+                    {% else %}
+                        Unknown
+                    {% endif %}
+
+                    {% if show.last_air_date %}
+                        - {{ show.last_air_date|slice:":4" }}
+                    {% endif %}
+
+                </p>
+
+
+                <!-- RATINGS AND STATUS -->
+
+                <div class="d-flex flex-wrap gap-2 mb-4">
+
+                    {% if show.vote_average %}
+                        <span class="badge bg-warning text-dark fs-6">
+                            ★ {{ show.vote_average|floatformat:1 }}/10
+                        </span>
+                    {% endif %}
+
+                    {% if show.status %}
+                        <span class="badge bg-secondary fs-6">
+                            {{ show.status }}
+                        </span>
+                    {% endif %}
+
+                    {% if show.in_production %}
+                        <span class="badge bg-success fs-6">
+                            Currently in Production
+                        </span>
+                    {% endif %}
+
+                </div>
+
+
+                <!-- GENRES -->
+
+                {% if show.genres %}
+                    <div class="mb-4">
+
+                        {% for genre in show.genres %}
+                            <span class="badge bg-secondary me-1 mb-1">
+                                {{ genre.name }}
+                            </span>
+                        {% endfor %}
+
+                    </div>
+                {% endif %}
+
+
+                <!-- TAGLINE -->
+
+                {% if show.tagline %}
+                    <p class="fst-italic text-secondary mb-3">
+                        "{{ show.tagline }}"
+                    </p>
+                {% endif %}
+
+
+                <!-- WATCHLIST AND COLLECTION -->
+
+                {% if user.is_authenticated %}
+
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+
+                        {% if in_watchlist %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'remove-tv-watchlist' show_record.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger"
+                                >
+                                    <i class="fa-solid fa-bookmark me-1"></i>
+                                    Remove from Watchlist
+                                </button>
+                            </form>
+
+                        {% else %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'add-tv-watchlist' show_record.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    <i class="fa-solid fa-bookmark me-1"></i>
+                                    Add to Watchlist
+                                </button>
+                            </form>
+
+                        {% endif %}
+
+
+                        <a
+                            href="{% url 'tv-collection-selector' show_record.id %}"
+                            class="btn btn-outline-light"
+                        >
+                            <i class="fa-solid fa-layer-group me-1"></i>
+                            Add to Collection
+                        </a>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+
+                        <a href="{% url 'login' %}" class="btn btn-outline-light">
+                            Login to Add to Watchlist
+                        </a>
+
+                        <a href="{% url 'login' %}" class="btn btn-outline-light">
+                            Login to Add to Collection
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- OVERVIEW -->
+
+                {% if show.overview %}
+
+                    <p class="lead tv-overview">
+                        {{ show.overview }}
+                    </p>
+
+                {% else %}
+
+                    <p class="text-secondary">
+                        No overview available.
+                    </p>
+
+                {% endif %}
+
+
+                <!-- TRAILER -->
+
+                {% if trailer_url %}
+
+                    <a
+                        href="{{ trailer_url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-danger mt-3"
+                    >
+                        <i class="fa-brands fa-youtube me-2"></i>
+                        Watch Trailer
+                    </a>
+
+                {% endif %}
+
+
+                <!-- EXTERNAL LINKS -->
+
+                <div class="d-flex flex-wrap gap-3 mt-3">
+
+                    {% if external_ids.imdb_id %}
+
+                        <a
+                            href="https://www.imdb.com/title/{{ external_ids.imdb_id }}/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="tv-external-link"
+                        >
+                            <i class="fa-brands fa-imdb me-1"></i>
+                            IMDb
+                        </a>
+
+                    {% endif %}
+
+                    {% if show.homepage %}
+
+                        <a
+                            href="{{ show.homepage }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="tv-external-link"
+                        >
+                            <i class="fa-solid fa-globe me-1"></i>
+                            Official Website
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
 
         </div>
-      {% endfor %}
 
     </div>
-  </div>
+
 </section>
+
+
+<!-- =========================================================
+     SHOW INFORMATION
+========================================================= -->
+
+<section class="tv-section">
+
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            Show Information
+        </h2>
+
+        <div class="row g-4">
+
+            <!-- BASIC INFORMATION -->
+
+            <div class="col-lg-6">
+
+                <ul class="list-group tv-info-list">
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Seasons</span>
+                        <strong>
+                            {{ show.number_of_seasons|default_if_none:"Not available" }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Current / Next Season</span>
+                        <strong>
+                            {% if current_season_number %}
+                                Season {{ current_season_number }}
+                            {% else %}
+                                Not announced
+                            {% endif %}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Current / Next Season</span>
+                        <strong>
+                            {% if current_season_number %}
+                                Season {{ current_season_number }}
+                            {% else %}
+                                Not announced
+                            {% endif %}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Episodes</span>
+                        <strong>
+                            {{ show.number_of_episodes|default_if_none:"Not available" }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Original Language</span>
+                        <strong>
+                            {{ show.original_language|upper|default:"Not available" }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Vote Average</span>
+                        <strong>
+                            {% if show.vote_average %}
+                                {{ show.vote_average|floatformat:1 }}/10
+                            {% else %}
+                                Not available
+                            {% endif %}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Total Votes</span>
+                        <strong>
+                            {{ show.vote_count|default:0 }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Popularity</span>
+                        <strong>
+                            {{ show.popularity|floatformat:1 }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">Type</span>
+                        <strong>
+                            {{ show.type|default:"Not available" }}
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="tv-info-label">In Production</span>
+                        <strong>
+                            {% if show.in_production %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </strong>
+                    </li>
+
+                </ul>
+
+            </div>
+
+
+            <!-- ADDITIONAL INFORMATION -->
+
+            <div class="col-lg-6">
+
+                <ul class="list-group tv-info-list">
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">First Air Date</span>
+                        <div class="tv-metadata-value">
+                            {{ show.first_air_date|default:"Not available" }}
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">Last Air Date</span>
+                        <div class="tv-metadata-value">
+                            {{ show.last_air_date|default:"Not available" }}
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">Episode Runtime</span>
+                        <div class="tv-metadata-value">
+
+                            {% if show.episode_run_time %}
+                                {{ show.episode_run_time|join:", " }} minutes
+                            {% else %}
+                                Not available
+                            {% endif %}
+
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">Spoken Languages</span>
+                        <div class="tv-metadata-value">
+
+                            {% for language in show.spoken_languages %}
+                                {{ language.english_name }}{% if not forloop.last %}, {% endif %}
+                            {% empty %}
+                                Not available
+                            {% endfor %}
+
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">Origin Countries</span>
+                        <div class="tv-metadata-value mt-2">
+
+                            {% for region in release_information %}
+                                {% if region.is_origin %}
+                                    <span class="badge bg-secondary me-1 mb-1">
+                                        {{ region.country }}
+                                    </span>
+                                {% endif %}
+                            {% empty %}
+                                Not available
+                            {% endfor %}
+
+                        </div>
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="tv-info-label">Original Language Name</span>
+                        <div class="tv-metadata-value">
+
+                            {% for language in show.spoken_languages %}
+                                {% if language.iso_639_1 == show.original_language %}
+                                    {{ language.english_name }}
+                                {% endif %}
+                            {% empty %}
+                                Not available
+                            {% endfor %}
+
+                        </div>
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     RELEASE AND COUNTRY CERTIFICATIONS
+========================================================= -->
+
+{% if release_information %}
+
+<section class="tv-section">
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h2 class="tv-section-title mb-2">
+                <i class="fa-solid fa-calendar-days me-2"></i>
+                Release &amp; Certification
+            </h2>
+
+            <p class="text-secondary mb-0">
+                Original first-air date and country-specific age ratings.
+            </p>
+
+        </div>
+
+        {% if show.first_air_date %}
+
+            <div class="tv-release-card mb-4">
+
+                <div class="tv-release-label mb-1">
+                    Original first-air date
+                </div>
+
+                <div class="tv-release-date">
+                    <i class="fa-regular fa-calendar me-2"></i>
+                    {{ show.first_air_date }}
+                </div>
+
+            </div>
+
+        {% endif %}
+
+        <div class="row g-3">
+
+            {% for region in release_information %}
+
+                <div class="col-12 col-sm-6 col-lg-4">
+
+                    <div class="tv-release-card">
+
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+
+                            <h5 class="tv-release-country mb-0">
+                                <i class="fa-solid fa-globe me-2 text-secondary"></i>
+                                {{ region.country }}
+                            </h5>
+
+                            {% if region.is_origin %}
+                                <span class="badge bg-primary">Origin</span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="tv-release-label mb-2">
+                            Age certification
+                        </div>
+
+                        {% if region.certification %}
+
+                            <span class="tv-release-certification">
+                                {{ region.certification }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-secondary small">
+                                Not available
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
 {% endif %}
 
 
-<!-- ========================================================= -->
-<!-- COMMENTS -->
-<!-- ========================================================= -->
+<!-- =========================================================
+     CREATORS
+========================================================= -->
 
-<section class="py-5">
-  <div class="container">
+{% if show.created_by %}
 
-    {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+<section class="tv-section bg-dark text-white">
 
-  </div>
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            Created By
+        </h2>
+
+        <div class="row g-4">
+
+            {% for creator in show.created_by %}
+
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        {% if creator.profile_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w185{{ creator.profile_path }}"
+                                alt="{{ creator.name }}"
+                                class="rounded-circle"
+                                width="65"
+                                height="65"
+                                style="object-fit: cover;"
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                                style="width:65px;height:65px;"
+                            >
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div>
+
+                            <h6 class="mb-1">
+                                {{ creator.name }}
+                            </h6>
+
+                            <small class="text-secondary">
+                                Creator
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
 </section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     NETWORKS
+========================================================= -->
+
+{% if show.networks %}
+
+<section class="tv-section">
+
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            Networks
+        </h2>
+
+        <div class="d-flex flex-wrap gap-4 align-items-center">
+
+            {% for network in show.networks %}
+
+                <div class="text-center">
+
+                    {% if network.logo_path %}
+
+                        <img
+                            src="https://image.tmdb.org/t/p/w185{{ network.logo_path }}"
+                            alt="{{ network.name }}"
+                            class="tv-network-logo mb-2"
+                        >
+
+                    {% endif %}
+
+                    <p class="small mb-0">
+                        {{ network.name }}
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     PRODUCTION COMPANIES
+========================================================= -->
+
+{% if show.production_companies %}
+
+<section class="tv-section bg-dark text-white">
+
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            Production Companies
+        </h2>
+
+        <div class="row g-3">
+
+            {% for company in show.production_companies %}
+
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="border border-secondary rounded p-3 h-100">
+
+                        {% if company.logo_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w185{{ company.logo_path }}"
+                                alt="{{ company.name }}"
+                                class="img-fluid mb-2"
+                                style="
+                                    max-height:55px;
+                                    object-fit:contain;
+                                    background:white;
+                                    padding:5px;
+                                    border-radius:5px;
+                                "
+                            >
+
+                        {% endif %}
+
+                        <p class="mb-0">
+                            {{ company.name }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     SEASONS
+========================================================= -->
+
+<section class="tv-section bg-dark text-white">
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h2 class="tv-section-title mb-2">
+                Seasons
+            </h2>
+
+            <p class="text-secondary mb-0">
+                Explore the seasons of {{ show.name }}.
+            </p>
+
+        </div>
+
+
+        {% if seasons %}
+
+            <div class="row g-4">
+
+                {% for season in seasons %}
+
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                        <!-- CLICKABLE SEASON CARD -->
+
+                        <a
+                            href="{% url 'tv-season-detail' show.id season.season_number %}"
+                            class="tv-season-link"
+                            aria-label="View {{ season.name }} episodes"
+                        >
+
+                            <div class="tv-season-card">
+
+                                {% if season.poster_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w342{{ season.poster_path }}"
+                                        alt="{{ season.name }}"
+                                        class="tv-season-poster"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="tv-season-placeholder">
+                                        No Poster
+                                    </div>
+
+                                {% endif %}
+
+
+                                <div class="tv-season-body">
+
+                                    <h6 class="tv-season-title">
+                                        {{ season.name }}
+                                    </h6>
+
+                                    <p class="tv-season-meta">
+                                        {{ season.episode_count }} Episodes
+                                    </p>
+
+                                    {% if season.air_date %}
+
+                                        <p class="tv-season-meta">
+                                            {{ season.air_date|slice:":4" }}
+                                        </p>
+
+                                    {% endif %}
+
+                                    {% if season.overview %}
+
+                                        <p class="small text-secondary mb-0">
+                                            {{ season.overview|truncatewords:20 }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="text-secondary">
+                No season information available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CAST
+========================================================= -->
+
+<section class="tv-section">
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h2 class="tv-section-title mb-2">
+                Cast
+            </h2>
+
+            <p class="text-secondary mb-0">
+                Meet the cast of {{ show.name }}.
+            </p>
+
+        </div>
+
+
+        {% if cast_members %}
+
+            <div class="row g-4">
+
+                {% for person in cast_members %}
+
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+                        <a
+                            href="{% url 'person-detail' person.id %}"
+                            class="tv-cast-link"
+                        >
+
+                            <div class="tv-cast-card">
+
+                                {% if person.profile_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w185{{ person.profile_path }}"
+                                        alt="{{ person.name }}"
+                                        class="tv-cast-image"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="tv-cast-placeholder">
+                                        <i class="fa-solid fa-user fa-2x"></i>
+                                    </div>
+
+                                {% endif %}
+
+
+                                <div class="tv-cast-info">
+
+                                    <h6 class="tv-cast-name">
+                                        {{ person.name }}
+                                    </h6>
+
+                                    <p class="tv-cast-character">
+                                        {{ person.character|default:"Cast member" }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="text-secondary">
+                No cast information available.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     KEYWORDS
+========================================================= -->
+
+{% if keywords %}
+
+<section class="tv-section bg-dark text-white">
+
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            <i class="fa-solid fa-tags me-2"></i>
+            Keywords
+        </h2>
+
+        <div>
+
+            {% for keyword in keywords %}
+
+                <span class="tv-keyword">
+                    {{ keyword.name }}
+                </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     ADDITIONAL IMAGES
+========================================================= -->
+
+{% if backdrops %}
+
+<section class="tv-section">
+
+    <div class="container">
+
+        <h2 class="tv-section-title">
+            <i class="fa-solid fa-images me-2"></i>
+            Show Images
+        </h2>
+
+        <div class="row g-3 tv-image-gallery">
+
+            {% for image in backdrops|slice:":8" %}
+
+                <div class="col-6 col-md-4">
+
+                    <img
+                        src="https://image.tmdb.org/t/p/w780{{ image.file_path }}"
+                        alt="{{ show.name }} backdrop"
+                        loading="lazy"
+                    >
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     SIMILAR TV SHOWS
+     V10 RECOMMENDATIONS
+========================================================= -->
+
+{% if similar_shows %}
+
+<section class="tv-section bg-dark text-white">
+
+    <div class="container">
+
+        <div class="mb-4">
+
+            <h2 class="tv-section-title mb-2">
+                Similar TV Shows
+            </h2>
+
+            <p class="text-secondary mb-0">
+                Discover shows recommended based on similar content and features.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for item in similar_shows %}
+
+                <div class="col-6 col-md-4 col-lg-3 col-xl-2">
+
+                    <a
+                        href="{% url 'tv-detail' item.show.tmdb_id %}"
+                        class="text-decoration-none text-white"
+                    >
+
+                        {% if item.poster_url %}
+
+                            <img
+                                src="{{ item.poster_url }}"
+                                class="img-fluid rounded shadow mb-2 w-100"
+                                alt="{{ item.show.name }}"
+                                loading="lazy"
+                                style="aspect-ratio:2/3;object-fit:cover;"
+                            >
+
+                        {% else %}
+
+                            <div
+                                class="bg-secondary rounded d-flex align-items-center justify-content-center mb-2"
+                                style="aspect-ratio:2/3;"
+                            >
+                                No Poster Available
+                            </div>
+
+                        {% endif %}
+
+
+                        <h6 class="fw-semibold mt-2 mb-2">
+                            {{ item.show.name }}
+                        </h6>
+
+                    </a>
+
+
+                    <p class="small text-warning mb-2">
+                        <i class="fa-solid fa-star"></i>
+                        {{ item.show.vote_average|floatformat:1 }}
+                    </p>
+
+
+                    {% if item.reason %}
+
+                        <p class="small text-secondary mb-0">
+                            {{ item.reason }}
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- =========================================================
+     COMMENTS
+========================================================= -->
+
+<section class="tv-section">
+
+    <div class="container">
+
+        {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+
+    </div>
+
+</section>
+
+
+{% endif %}
 
 {% endblock %}

@@ -1,5 +1,593 @@
-{% extends "base.html" %} {% load static %} {% block content %}
 
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+  /* =========================================
+   HOMEPAGE CATALOG CARDS
+========================================= */
+
+.catalog-card,
+.card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.catalog-card:hover,
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+.catalog-card .card-title,
+.card .card-title {
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.catalog-card .card-text,
+.card .card-text {
+    font-size: 0.98rem;
+    line-height: 1.55;
+}
+
+.catalog-card .badge,
+.card .badge {
+    font-size: 0.85rem;
+    padding: 0.48rem 0.65rem;
+}
+
+.catalog-card .btn,
+.card .btn {
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+/* TV and movie posters */
+
+.catalog-card img,
+.card .card-img-top {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+}
+
+/* =========================================
+   BROWSE BY GENRE
+========================================= */
+
+.genre-section {
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(59, 130, 246, 0.16),
+            transparent 35%
+        ),
+        #101827;
+    color: #ffffff;
+}
+
+.genre-card {
+    display: block;
+    height: 100%;
+    padding: 26px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.055);
+    color: #ffffff;
+    text-decoration: none;
+    transition: 0.25s ease;
+}
+
+.genre-card:hover {
+    transform: translateY(-5px);
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(96, 165, 250, 0.65);
+    color: #ffffff;
+}
+
+.genre-card h5 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.genre-card p {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.genre-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+/* =========================================
+   WHY CALYPSO
+========================================= */
+
+.why-calypso {
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(99, 102, 241, 0.22),
+            transparent 32%
+        ),
+        linear-gradient(135deg, #0b1220, #172554 55%, #111827);
+    color: #ffffff;
+}
+
+.why-calypso .section-subtitle {
+    color: #cbd5e1;
+}
+
+.why-card {
+    height: 100%;
+    padding: 32px 26px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.07);
+    transition: 0.25s ease;
+}
+
+.why-card:hover {
+    transform: translateY(-6px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.why-card .feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    font-size: 1.6rem;
+}
+
+.why-card h4 {
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.why-card p {
+    color: #cbd5e1;
+    font-size: 0.98rem;
+    line-height: 1.7;
+}
+
+
+
+/* =========================================================
+   CALYPSO HOMEPAGE
+========================================================= */
+
+:root {
+    --calypso-bg: #0b1120;
+    --calypso-card: #151e30;
+    --calypso-card-hover: #1c2940;
+    --calypso-accent: #38bdf8;
+    --calypso-muted: #94a3b8;
+}
+
+/* HERO */
+
+.home-hero {
+    position: relative;
+    min-height: 540px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+        linear-gradient(90deg, rgba(5, 12, 25, .96), rgba(5, 12, 25, .62)),
+        url("{% static 'images/hero-bg.jpg' %}");
+    background-size: cover;
+    background-position: center;
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    padding: 90px 0;
+}
+
+.home-hero h1 {
+    color: #fff;
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 22px;
+}
+
+.home-hero p {
+    color: #cbd5e1;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    max-width: 600px;
+}
+
+.hero-label {
+    display: inline-block;
+    color: var(--calypso-accent);
+    background: rgba(56, 189, 248, .12);
+    border: 1px solid rgba(56, 189, 248, .25);
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+/* RECOMMENDER */
+
+.recommender-banner {
+    position: relative;
+    overflow: hidden;
+    padding: 48px;
+    border-radius: 20px;
+    color: white;
+    background:
+        radial-gradient(circle at 90% 20%, rgba(56,189,248,.25), transparent 35%),
+        linear-gradient(120deg, #111827, #172554);
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+.recommender-banner h2 {
+    max-width: 700px;
+    font-weight: 800;
+}
+
+.recommender-banner p {
+    color: #cbd5e1;
+    max-width: 650px;
+    line-height: 1.7;
+}
+
+/* SECTION HEADINGS */
+
+.catalog-section {
+    padding: 65px 0;
+}
+
+.catalog-section.dark-section {
+    background: var(--calypso-bg);
+    color: white;
+}
+
+.section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.section-heading h2 {
+    font-weight: 800;
+    margin-bottom: 7px;
+}
+
+.section-heading p {
+    color: var(--calypso-muted);
+    margin-bottom: 0;
+}
+
+.section-eyebrow {
+    color: var(--calypso-accent);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+/* CATALOG CARDS */
+
+.catalog-card {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--calypso-card);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 15px;
+    transition: transform .25s ease, box-shadow .25s ease,
+                border-color .25s ease;
+}
+
+.catalog-card:hover {
+    transform: translateY(-7px);
+    background: var(--calypso-card-hover);
+    border-color: rgba(56,189,248,.55);
+    box-shadow: 0 15px 35px rgba(0,0,0,.3);
+}
+
+.catalog-poster-wrap {
+    position: relative;
+    overflow: hidden;
+    background: #1e293b;
+    aspect-ratio: 2 / 3;
+}
+
+.catalog-poster {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .4s ease;
+}
+
+.catalog-card:hover .catalog-poster {
+    transform: scale(1.06);
+}
+
+.catalog-poster-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    min-height: 230px;
+    color: #64748b;
+    font-size: 2.5rem;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+}
+
+.catalog-poster-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(2,6,23,.9),
+        transparent 55%
+    );
+    opacity: .8;
+}
+
+.catalog-rating {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    background: rgba(15,23,42,.92);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,.25);
+    border-radius: 7px;
+    padding: 6px 9px;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.catalog-status {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    z-index: 2;
+    color: white;
+    background: rgba(14,165,233,.9);
+    border-radius: 6px;
+    padding: 5px 9px;
+    font-size: .7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.catalog-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 15px;
+}
+
+.catalog-title {
+    color: #f8fafc;
+    font-size: .98rem;
+    font-weight: 750;
+    line-height: 1.4;
+    margin-bottom: 7px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.75rem;
+}
+
+.catalog-meta {
+    color: var(--calypso-muted);
+    font-size: .8rem;
+    margin-bottom: 13px;
+}
+
+.catalog-overview {
+    color: #cbd5e1;
+    font-size: .82rem;
+    line-height: 1.55;
+    margin-bottom: 14px;
+}
+
+.catalog-footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.catalog-votes {
+    color: var(--calypso-muted);
+    font-size: .73rem;
+}
+
+.catalog-button {
+    border-radius: 7px;
+    font-size: .78rem;
+    font-weight: 700;
+    padding: 7px 12px;
+}
+
+/* DISCOVERY TABS */
+
+.discovery-section {
+    background: #0b1120;
+    color: white;
+    padding: 70px 0;
+}
+
+.discovery-tabs {
+    gap: 10px;
+}
+
+.discovery-tabs .nav-link {
+    color: #cbd5e1;
+    background: #172033;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 30px;
+    font-weight: 650;
+    padding: 10px 18px;
+}
+
+.discovery-tabs .nav-link.active {
+    color: #07111f;
+    background: var(--calypso-accent);
+    border-color: var(--calypso-accent);
+}
+
+/* GENRES */
+
+.genre-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 125px;
+    height: 100%;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(145deg, #172033, #0f172a);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    transition: .25s ease;
+}
+
+.genre-card:hover {
+    transform: translateY(-5px);
+    color: white;
+    border-color: var(--calypso-accent);
+    background: #1e293b;
+}
+
+.genre-card h5 {
+    font-weight: 800;
+    margin-bottom: 7px;
+}
+
+.genre-card p {
+    color: #94a3b8;
+    font-size: .8rem;
+    margin-bottom: 0;
+}
+
+/* EMPTY STATES */
+
+.catalog-empty {
+    background: #151e30;
+    border: 1px dashed rgba(255,255,255,.15);
+    border-radius: 14px;
+    padding: 35px 20px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+/* FEATURES */
+
+.feature-card {
+    height: 100%;
+    padding: 30px;
+    border-radius: 15px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    transition: transform .25s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0f2fe;
+    color: #0284c7;
+    border-radius: 13px;
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 767px) {
+
+    .home-hero {
+        min-height: 430px;
+    }
+
+    .home-hero-content {
+        padding: 65px 0;
+    }
+
+    .recommender-banner {
+        padding: 28px 22px;
+    }
+
+    .catalog-section,
+    .discovery-section {
+        padding: 45px 0;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .section-heading h2 {
+        font-size: 1.45rem;
+    }
+
+    .catalog-body {
+        padding: 11px;
+    }
+
+    .catalog-title {
+        font-size: .88rem;
+    }
+
+    .catalog-button {
+        padding: 6px 9px;
+        font-size: .72rem;
+    }
+}
+</style>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
 <!-- HERO SECTION -->
 <section class="hero">
   <div class="hero-overlay"></div>
@@ -17,6 +605,10 @@
   </div>
 </section>
 
+
+<!-- =========================================================
+     MACHINE LEARNING RECOMMENDER
+========================================================= -->
 <!-- ML MOVIE RECOMMENDER -->
 <section class="py-5">
   <div class="container">
@@ -45,669 +637,1402 @@
     </div>
   </div>
 </section>
-<!-- LATEST MOVIES -->
-<section class="py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Latest Movies</h2>
-      <a href="/movies/" class="btn btn-outline-primary">View All</a>
-    </div>
+<!-- =========================================================
+     LATEST MOVIES
+========================================================= -->
 
-    <div class="row g-4">
-      {% for movie in latest_movies %}
-      <div class="col-6 col-md-4 col-lg-3">
-        <div class="card h-100 shadow-sm">
-          {% if movie.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-            class="card-img-top"
-            alt="{{ movie.title }}"
-            loading="lazy"
-          />
-          {% endif %}
+<section class="catalog-section">
 
-          <div class="card-body">
-            <h5 class="card-title">{{ movie.title }}</h5>
+    <div class="container">
 
-            {% if movie.release_date %}
-            <p class="text-muted">{{ movie.release_date|date:"Y" }}</p>
-            {% endif %}
+        <div class="section-heading">
 
-            <p class="card-text">⭐ {{ movie.vote_average|floatformat:1 }}</p>
+            <div>
+                <div class="section-eyebrow">Recently released</div>
+                <h2>Latest Movies</h2>
+                <p>Recently released movies worth checking out.</p>
+            </div>
 
-            <a
-              href="{% url 'movie-detail' movie.tmdb_id %}"
-              class="btn btn-primary"
-            >
-              Details
+            <a href="{% url 'movies' %}" class="btn btn-outline-primary">
+                View All
+                <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
-          </div>
+
         </div>
-      </div>
-      {% empty %}
-      <div class="col-12">
-        <p class="text-muted">No movies available.</p>
-      </div>
-      {% endfor %}
+
+
+        <div class="row g-4">
+
+            {% for movie in latest_movies %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if movie.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                alt="{{ movie.title }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        {% if movie.vote_count > 0 %}
+                            <span class="catalog-rating">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ movie.vote_average|floatformat:1 }}
+                            </span>
+                        {% endif %}
+
+                        <span class="catalog-status">
+                            Latest
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ movie.title }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if movie.release_date %}
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                {{ movie.release_date|date:"Y" }}
+                            {% else %}
+                                Release date unavailable
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {{ movie.vote_count }} votes
+                            </span>
+
+                            <a
+                                href="{% url 'movie-detail' movie.tmdb_id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+                <div class="col-12">
+                    <div class="catalog-empty">
+                        <i class="fa-solid fa-film fa-2x mb-3"></i>
+                        <p class="mb-0">No latest movies available.</p>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
     </div>
-  </div>
+
 </section>
 
-<!-- DISCOVERY TABS -->
-<section class="py-5 bg-dark text-white">
+
+<!-- =========================================================
+     UPCOMING MOVIES
+========================================================= -->
+
+<section class="catalog-section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Coming soon</div>
+                <h2>Upcoming Movies</h2>
+                <p>Keep an eye on movies scheduled for release.</p>
+            </div>
+
+            <a href="{% url 'movies' %}" class="btn btn-outline-light">
+                Browse Movies
+                <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for movie in upcoming_movies %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if movie.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                alt="{{ movie.title }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        <span class="catalog-status">
+                            Upcoming
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ movie.title }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if movie.release_date %}
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                {{ movie.release_date|slice:":10" }}
+                            {% else %}
+                                Release date TBA
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {% if movie.vote_count > 0 %}
+                                    {{ movie.vote_count }} votes
+                                {% else %}
+                                    Not rated
+                                {% endif %}
+                            </span>
+
+                            <a
+                                href="{% url 'movie-detail' movie.id %}"
+                                class="btn btn-info catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+                <div class="col-12">
+                    <div class="catalog-empty">
+                        <i class="fa-solid fa-calendar-days fa-2x mb-3"></i>
+                        <p class="mb-0">
+                            No upcoming movie releases are currently listed for India.
+                        </p>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     NOW PLAYING MOVIES
+========================================================= -->
+
+<section class="catalog-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">In cinemas</div>
+                <h2>Now Playing</h2>
+                <p>Movies currently listed as playing in India.</p>
+            </div>
+
+            <a
+                href="{% url 'now-playing' %}"
+                class="btn btn-outline-primary"
+            >
+                View All
+                <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for movie in now_playing_movies %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if movie.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                alt="{{ movie.title }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        {% if movie.vote_count > 0 %}
+                            <span class="catalog-rating">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ movie.vote_average|floatformat:1 }}
+                            </span>
+                        {% endif %}
+
+                        <span class="catalog-status">
+                            In Cinemas
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ movie.title }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if movie.release_date %}
+                                {{ movie.release_date|slice:":10" }}
+                            {% else %}
+                                Release date unavailable
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {% if movie.vote_count > 0 %}
+                                    {{ movie.vote_count }} votes
+                                {% else %}
+                                    Not rated
+                                {% endif %}
+                            </span>
+
+                            <a
+                                href="{% url 'movie-detail' movie.id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+                <div class="col-12">
+                    <div class="catalog-empty">
+                        <i class="fa-solid fa-ticket fa-2x mb-3"></i>
+                        <p class="mb-0">No Now Playing movies available.</p>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     POPULAR MOVIES
+========================================================= -->
+
+<section class="catalog-section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Trending</div>
+                <h2>Popular Movies</h2>
+                <p>Movies attracting attention from audiences.</p>
+            </div>
+
+            <a href="{% url 'movies' %}" class="btn btn-outline-light">
+                View All
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for movie in popular_movies %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if movie.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                alt="{{ movie.title }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        {% if movie.vote_count > 0 %}
+                            <span class="catalog-rating">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ movie.vote_average|floatformat:1 }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ movie.title }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if movie.release_date %}
+                                {{ movie.release_date|date:"Y" }}
+                            {% else %}
+                                Release year unavailable
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {{ movie.vote_count }} votes
+                            </span>
+
+                            <a
+                                href="{% url 'movie-detail' movie.tmdb_id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+                <div class="col-12">
+                    <div class="catalog-empty">
+                        No popular movies available.
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     MOVIE COMMUNITY DISCOVERY
+========================================================= -->
+
+<section class="discovery-section">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <div class="section-eyebrow">
+                Calypso Community
+            </div>
+
+            <h2 class="fw-bold display-6">
+                Discover What People Are Watching
+            </h2>
+
+            <p class="text-secondary">
+                Explore movies based on discussions, likes and IMDb ratings.
+            </p>
+
+        </div>
+
+
+        <!-- TAB NAVIGATION -->
+
+        <ul
+            class="nav nav-pills discovery-tabs justify-content-center mb-5"
+            id="discoveryTabs"
+            role="tablist"
+        >
+
+            <li class="nav-item" role="presentation">
+
+                <button
+                    class="nav-link active"
+                    id="most-commented-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#most-commented"
+                    type="button"
+                    role="tab"
+                    aria-controls="most-commented"
+                    aria-selected="true"
+                >
+                    <i class="fa-solid fa-comments me-2"></i>
+                    Most Commented
+                </button>
+
+            </li>
+
+
+            <li class="nav-item" role="presentation">
+
+                <button
+                    class="nav-link"
+                    id="most-liked-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#most-liked"
+                    type="button"
+                    role="tab"
+                    aria-controls="most-liked"
+                    aria-selected="false"
+                >
+                    <i class="fa-solid fa-heart me-2"></i>
+                    Most Liked
+                </button>
+
+            </li>
+
+
+            <li class="nav-item" role="presentation">
+
+                <button
+                    class="nav-link"
+                    id="imdb-top-tab"
+                    data-bs-toggle="pill"
+                    data-bs-target="#imdb-top"
+                    type="button"
+                    role="tab"
+                    aria-controls="imdb-top"
+                    aria-selected="false"
+                >
+                    <i class="fa-solid fa-star me-2"></i>
+                    IMDb Top Rated
+                </button>
+
+            </li>
+
+        </ul>
+
+
+        <!-- TAB CONTENT -->
+
+        <div class="tab-content">
+
+
+            <!-- MOST COMMENTED -->
+
+            <div
+                class="tab-pane fade show active"
+                id="most-commented"
+                role="tabpanel"
+                aria-labelledby="most-commented-tab"
+            >
+
+                <div class="row g-4">
+
+                    {% for movie in most_commented_movies %}
+
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="catalog-card">
+
+                            <div class="catalog-poster-wrap">
+
+                                {% if movie.poster_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                        alt="{{ movie.title }}"
+                                        class="catalog-poster"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="catalog-poster-placeholder">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="catalog-poster-overlay"></div>
+
+                                <span class="catalog-rating">
+                                    <i class="fa-solid fa-comments me-1"></i>
+                                    {{ movie.comment_count }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="catalog-body">
+
+                                <h3 class="catalog-title">
+                                    {{ movie.title }}
+                                </h3>
+
+                                <p class="catalog-meta">
+                                    {% if movie.release_date %}
+                                        {{ movie.release_date|date:"Y" }}
+                                    {% endif %}
+                                </p>
+
+                                <div class="catalog-footer">
+
+                                    <span class="catalog-votes">
+                                        {{ movie.comment_count }} comments
+                                    </span>
+
+                                    <a
+                                        href="{% url 'movie-detail' movie.tmdb_id %}"
+                                        class="btn btn-primary catalog-button"
+                                    >
+                                        View
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="col-12">
+                        <div class="catalog-empty">
+                            <i class="fa-solid fa-comments fa-2x mb-3"></i>
+                            <p class="mb-0">No movie discussions yet.</p>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- MOST LIKED -->
+
+            <div
+                class="tab-pane fade"
+                id="most-liked"
+                role="tabpanel"
+                aria-labelledby="most-liked-tab"
+            >
+
+                <div class="row g-4">
+
+                    {% for movie in most_liked_movies %}
+
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="catalog-card">
+
+                            <div class="catalog-poster-wrap">
+
+                                {% if movie.poster_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                        alt="{{ movie.title }}"
+                                        class="catalog-poster"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="catalog-poster-placeholder">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="catalog-poster-overlay"></div>
+
+                                <span class="catalog-rating">
+                                    <i class="fa-solid fa-heart me-1"></i>
+                                    {{ movie.like_count }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="catalog-body">
+
+                                <h3 class="catalog-title">
+                                    {{ movie.title }}
+                                </h3>
+
+                                <p class="catalog-meta">
+                                    {% if movie.release_date %}
+                                        {{ movie.release_date|date:"Y" }}
+                                    {% endif %}
+                                </p>
+
+                                <div class="catalog-footer">
+
+                                    <span class="catalog-votes">
+                                        {{ movie.like_count }} likes
+                                    </span>
+
+                                    <a
+                                        href="{% url 'movie-detail' movie.tmdb_id %}"
+                                        class="btn btn-primary catalog-button"
+                                    >
+                                        View
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="col-12">
+                        <div class="catalog-empty">
+                            <i class="fa-solid fa-heart fa-2x mb-3"></i>
+                            <p class="mb-0">No liked discussions yet.</p>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- IMDb TOP RATED -->
+
+            <div
+                class="tab-pane fade"
+                id="imdb-top"
+                role="tabpanel"
+                aria-labelledby="imdb-top-tab"
+            >
+
+                <div class="row g-4">
+
+                    {% for movie in imdb_top_movies %}
+
+                    <div class="col-6 col-md-4 col-lg-3">
+
+                        <div class="catalog-card">
+
+                            <div class="catalog-poster-wrap">
+
+                                {% if movie.poster_path %}
+
+                                    <img
+                                        src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
+                                        alt="{{ movie.title }}"
+                                        class="catalog-poster"
+                                        loading="lazy"
+                                    >
+
+                                {% else %}
+
+                                    <div class="catalog-poster-placeholder">
+                                        <i class="fa-solid fa-film"></i>
+                                    </div>
+
+                                {% endif %}
+
+                                <div class="catalog-poster-overlay"></div>
+
+                                <span class="catalog-rating">
+                                    <i class="fa-solid fa-star me-1"></i>
+                                    {{ movie.imdb_rating|floatformat:1 }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="catalog-body">
+
+                                <h3 class="catalog-title">
+                                    {{ movie.title }}
+                                </h3>
+
+                                <p class="catalog-meta">
+                                    {% if movie.release_date %}
+                                        {{ movie.release_date|date:"Y" }}
+                                    {% endif %}
+                                </p>
+
+                                <div class="catalog-footer">
+
+                                    <span class="catalog-votes">
+                                        IMDb Rating
+                                    </span>
+
+                                    <a
+                                        href="{% url 'movie-detail' movie.tmdb_id %}"
+                                        class="btn btn-primary catalog-button"
+                                    >
+                                        View
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="col-12">
+                        <div class="catalog-empty">
+                            <i class="fa-solid fa-star fa-2x mb-3"></i>
+                            <p class="mb-0">IMDb ratings are unavailable.</p>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     LATEST TV SHOWS
+========================================================= -->
+
+<section class="catalog-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Recently premiered</div>
+                <h2>Latest TV Shows</h2>
+                <p>Recently premiered television shows.</p>
+            </div>
+
+            <a href="{% url 'tv-shows' %}" class="btn btn-outline-primary">
+                View All
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for show in latest_shows %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if show.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+                                alt="{{ show.name }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-tv"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        {% if show.vote_count > 0 %}
+                            <span class="catalog-rating">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ show.vote_average|floatformat:1 }}
+                            </span>
+                        {% endif %}
+
+                        <span class="catalog-status">
+                            Latest
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ show.name }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if show.first_air_date %}
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                {{ show.first_air_date|slice:":10" }}
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {% if show.vote_count > 0 %}{{ show.vote_count }} votes{% else %}Not rated yet{% endif %}
+                            </span>
+
+                            <a
+                                href="{% url 'tv-detail' show.id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+                <div class="catalog-empty">
+                    No latest TV shows available.
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     UPCOMING TV SHOWS
+========================================================= -->
+
+<section class="catalog-section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Coming soon</div>
+                <h2>Upcoming TV Shows</h2>
+                <p>Television shows scheduled to premiere.</p>
+            </div>
+
+            <a href="{% url 'tv-shows' %}" class="btn btn-outline-light">
+                Browse TV Shows
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for show in upcoming_shows %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if show.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+                                alt="{{ show.name }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-tv"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        <span class="catalog-status">
+                            Upcoming
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ show.name }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if show.first_air_date %}
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                {{ show.first_air_date|slice:":10" }}
+                            {% else %}
+                                Premiere date TBA
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {% if show.vote_count > 0 %}
+                                    {{ show.vote_count }} votes
+                                {% else %}
+                                    Not rated
+                                {% endif %}
+                            </span>
+
+                            <a
+                                href="{% url 'tv-detail' show.id %}"
+                                class="btn btn-info catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+                <div class="catalog-empty">
+                    No widely anticipated upcoming English-language shows are listed right now.
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TOP RATED TV SHOWS
+========================================================= -->
+
+<section class="catalog-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Audience favorites</div>
+                <h2>Top Rated TV Shows</h2>
+                <p>Highly rated shows with a reasonable number of votes.</p>
+            </div>
+
+            <a href="{% url 'tv-shows' %}" class="btn btn-outline-primary">
+                View All
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for show in top_rated_shows %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if show.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+                                alt="{{ show.name }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-tv"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        <span class="catalog-rating">
+                            <i class="fa-solid fa-star me-1"></i>
+                            {{ show.vote_average|floatformat:1 }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ show.name }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if show.first_air_date %}
+                                {{ show.first_air_date|slice:":10" }}
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {{ show.vote_count }} votes
+                            </span>
+
+                            <a
+                                href="{% url 'tv-detail' show.id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+                <div class="catalog-empty">
+                    No top-rated TV shows available.
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     POPULAR TV SHOWS
+========================================================= -->
+
+<section class="catalog-section dark-section">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div>
+                <div class="section-eyebrow">Trending television</div>
+                <h2>Popular TV Shows</h2>
+                <p>Shows attracting the most audience attention.</p>
+            </div>
+
+            <a href="{% url 'tv-shows' %}" class="btn btn-outline-light">
+                View All
+            </a>
+
+        </div>
+
+
+        <div class="row g-4">
+
+            {% for show in popular_shows %}
+
+            <div class="col-6 col-md-4 col-lg-3">
+
+                <div class="catalog-card">
+
+                    <div class="catalog-poster-wrap">
+
+                        {% if show.poster_path %}
+
+                            <img
+                                src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
+                                alt="{{ show.name }}"
+                                class="catalog-poster"
+                                loading="lazy"
+                            >
+
+                        {% else %}
+
+                            <div class="catalog-poster-placeholder">
+                                <i class="fa-solid fa-tv"></i>
+                            </div>
+
+                        {% endif %}
+
+                        <div class="catalog-poster-overlay"></div>
+
+                        {% if show.vote_count > 0 %}
+                            <span class="catalog-rating">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ show.vote_average|floatformat:1 }}
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="catalog-body">
+
+                        <h3 class="catalog-title">
+                            {{ show.name }}
+                        </h3>
+
+                        <p class="catalog-meta">
+                            {% if show.first_air_date %}
+                                {{ show.first_air_date|slice:":10" }}
+                            {% endif %}
+                        </p>
+
+                        <div class="catalog-footer">
+
+                            <span class="catalog-votes">
+                                {{ show.vote_count }} votes
+                            </span>
+
+                            <a
+                                href="{% url 'tv-detail' show.id %}"
+                                class="btn btn-primary catalog-button"
+                            >
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="col-12">
+                <div class="catalog-empty">
+                    No popular TV shows available.
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- BROWSE BY GENRE -->
+<section class="genre-section py-5">
   <div class="container">
     <div class="text-center mb-5">
-      <h2 class="fw-bold">Discover Movies</h2>
+      <h2 class="fw-bold">Browse by Genre</h2>
       <p class="text-secondary">
-        Explore movies based on what the Calypso community is watching,
-        discussing, and rating.
+        Find your next watch by exploring your favorite genres.
       </p>
     </div>
 
-    <!-- TAB NAVIGATION -->
-    <ul
-      class="nav nav-pills justify-content-center mb-5"
-      id="discoveryTabs"
-      role="tablist"
-    >
-      <li class="nav-item me-2" role="presentation">
-        <button
-          class="nav-link active"
-          id="most-commented-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#most-commented"
-          type="button"
-          role="tab"
-          aria-controls="most-commented"
-          aria-selected="true"
-        >
-          <i class="fa-solid fa-comments me-2"></i>
-          Most Commented
-        </button>
-      </li>
-
-      <li class="nav-item me-2" role="presentation">
-        <button
-          class="nav-link"
-          id="most-liked-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#most-liked"
-          type="button"
-          role="tab"
-          aria-controls="most-liked"
-          aria-selected="false"
-        >
-          <i class="fa-solid fa-heart me-2"></i>
-          Most Liked
-        </button>
-      </li>
-
-      <li class="nav-item" role="presentation">
-        <button
-          class="nav-link"
-          id="imdb-top-tab"
-          data-bs-toggle="pill"
-          data-bs-target="#imdb-top"
-          type="button"
-          role="tab"
-          aria-controls="imdb-top"
-          aria-selected="false"
-        >
-          <i class="fa-solid fa-star me-2"></i>
-          IMDb Top Rated
-        </button>
-      </li>
-    </ul>
-
-    <!-- TAB CONTENT -->
-    <div class="tab-content" id="discoveryTabsContent">
-      <!-- MOST COMMENTED -->
-      <div
-        class="tab-pane fade show active"
-        id="most-commented"
-        role="tabpanel"
-        aria-labelledby="most-commented-tab"
-      >
-        <div class="row g-4">
-          {% for movie in most_commented_movies %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="card h-100 bg-secondary text-white shadow">
-              {% if movie.poster_path %}
-              <img
-                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-                class="card-img-top"
-                alt="{{ movie.title }}"
-                loading="lazy"
-              />
-              {% endif %}
-
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ movie.title }}</h5>
-
-                {% if movie.release_date %}
-                <p class="text-light small mb-2">
-                  {{ movie.release_date|date:"Y" }}
-                </p>
-                {% endif %}
-
-                <div class="mb-3">
-                  <span class="badge bg-warning text-dark me-1">
-                    ⭐ {{ movie.vote_average|floatformat:1 }}
-                  </span>
-                  <span class="badge bg-info text-dark">
-                    <i class="fa-solid fa-comments me-1"></i>
-                    {{ movie.comment_count }}
-                  </span>
-                </div>
-
-                <a
-                  href="{% url 'movie-detail' movie.tmdb_id %}"
-                  class="btn btn-light btn-sm mt-auto"
-                >
-                  View Movie
-                </a>
-              </div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-12 text-center">
-            <i class="fa-solid fa-comments fa-3x text-secondary mb-3"></i>
-            <h4>No comments yet</h4>
-            <p class="text-secondary">
-              Once people start discussing movies, the most discussed ones will
-              appear here.
-            </p>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- MOST LIKED -->
-      <div
-        class="tab-pane fade"
-        id="most-liked"
-        role="tabpanel"
-        aria-labelledby="most-liked-tab"
-      >
-        <div class="row g-4">
-          {% for movie in most_liked_movies %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="card h-100 bg-secondary text-white shadow">
-              {% if movie.poster_path %}
-              <img
-                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-                class="card-img-top"
-                alt="{{ movie.title }}"
-                loading="lazy"
-              />
-              {% endif %}
-
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ movie.title }}</h5>
-
-                {% if movie.release_date %}
-                <p class="text-light small mb-2">
-                  {{ movie.release_date|date:"Y" }}
-                </p>
-                {% endif %}
-
-                <div class="mb-3">
-                  <span class="badge bg-warning text-dark me-1">
-                    ⭐ {{ movie.vote_average|floatformat:1 }}
-                  </span>
-                  <span class="badge bg-danger">
-                    <i class="fa-solid fa-heart me-1"></i>
-                    {{ movie.like_count }}
-                  </span>
-                </div>
-
-                <a
-                  href="{% url 'movie-detail' movie.tmdb_id %}"
-                  class="btn btn-light btn-sm mt-auto"
-                >
-                  View Movie
-                </a>
-              </div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-12 text-center">
-            <i class="fa-solid fa-heart fa-3x text-secondary mb-3"></i>
-            <h4>No liked comments yet</h4>
-            <p class="text-secondary">
-              Movies with the most-liked discussions will appear here.
-            </p>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- IMDb TOP RATED -->
-      <div
-        class="tab-pane fade"
-        id="imdb-top"
-        role="tabpanel"
-        aria-labelledby="imdb-top-tab"
-      >
-        <div class="row g-4">
-          {% for movie in imdb_top_movies %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="card h-100 bg-secondary text-white shadow">
-              {% if movie.poster_path %}
-              <img
-                src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-                class="card-img-top"
-                alt="{{ movie.title }}"
-                loading="lazy"
-              />
-              {% endif %}
-
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ movie.title }}</h5>
-
-                {% if movie.release_date %}
-                <p class="text-light small mb-2">
-                  {{ movie.release_date|date:"Y" }}
-                </p>
-                {% endif %}
-
-                <div class="mb-3">
-                  <span class="badge bg-warning text-dark">
-                    <i class="fa-solid fa-star me-1"></i>
-                    IMDb {{ movie.imdb_rating|floatformat:1 }}
-                  </span>
-
-                  {% if movie.imdb_votes %}
-                  <span class="badge bg-dark">
-                    {{ movie.imdb_votes }} votes
-                  </span>
-                  {% endif %}
-                </div>
-
-                <a
-                  href="{% url 'movie-detail' movie.tmdb_id %}"
-                  class="btn btn-light btn-sm mt-auto"
-                >
-                  View Movie
-                </a>
-              </div>
-            </div>
-          </div>
-          {% empty %}
-          <div class="col-12 text-center">
-            <i class="fa-solid fa-star fa-3x text-secondary mb-3"></i>
-            <h4>IMDb ratings unavailable</h4>
-            <p class="text-secondary">
-              Movies with IMDb ratings will appear here.
-            </p>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- LATEST TV SHOWS -->
-<section class="bg-dark text-white py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2>Latest TV Shows</h2>
-        <p class="text-secondary mb-0">Discover TV shows on Calypso.</p>
-      </div>
-
-      <a href="{% url 'tv-shows' %}" class="btn btn-outline-light">
-        View All
-      </a>
-    </div>
-
     <div class="row g-4">
-      {% for show in latest_shows %}
       <div class="col-6 col-md-4 col-lg-3">
-        <div class="card h-100 bg-secondary text-white">
-          {% if show.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
-            class="card-img-top"
-            alt="{{ show.name }}"
-            loading="lazy"
-          />
-          {% endif %}
-
-          <div class="card-body">
-            <h5 class="card-title">{{ show.name }}</h5>
-
-            {% if show.first_air_date %}
-            <p class="text-light small">{{ show.first_air_date|date:"Y" }}</p>
-            {% endif %}
-
-            <span class="badge bg-warning text-dark">
-              ⭐ {{ show.vote_average|floatformat:1 }}
-            </span>
-
-            <a
-              href="{% url 'tv-detail' show.tmdb_id %}"
-              class="btn btn-light btn-sm float-end"
-            >
-              Details
-            </a>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="col-12">
-        <p class="text-secondary">No TV shows available.</p>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% comment %}
-<!-- POPULAR TV SHOWS -->
-<section class="bg-dark text-white py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2>Popular TV Shows</h2>
-        <p class="text-secondary mb-0">Shows attracting the most attention.</p>
-      </div>
-
-      <a href="{% url 'tv-shows' %}" class="btn btn-outline-light">
-        View All
-      </a>
-    </div>
-
-    <div class="row g-4">
-      {% for show in popular_shows %}
-      <div class="col-6 col-md-4 col-lg-3">
-        <div class="card h-100 bg-secondary text-white">
-          {% if show.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
-            class="card-img-top"
-            alt="{{ show.name }}"
-            loading="lazy"
-          />
-          {% endif %}
-
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ show.name }}</h5>
-
-            {% if show.first_air_date %}
-            <p class="text-light small">{{ show.first_air_date|date:"Y" }}</p>
-            {% endif %}
-
-            <div class="mb-3">
-              <span class="badge bg-warning text-dark">
-                ⭐ {{ show.vote_average|floatformat:1 }}
-              </span>
-
-              <span class="badge bg-info text-dark">
-                {{ show.vote_count }} votes
-              </span>
-            </div>
-
-            <a
-              href="{% url 'tv-detail' show.tmdb_id %}"
-              class="btn btn-light btn-sm mt-auto"
-            >
-              Details
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {% empty %}
-      <div class="col-12">
-        <p class="text-secondary">No popular TV shows available.</p>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endcomment %}
-
-<!-- TOP RATED TV SHOWS -->
-<section class="py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Top Rated TV Shows</h2>
-
-      <a href="{% url 'tv-shows' %}" class="btn btn-outline-primary">
-        View All
-      </a>
-    </div>
-
-    <div class="row g-4">
-      {% for show in top_rated_shows %}
-      <div class="col-6 col-md-4 col-lg-3">
-        <div class="card h-100 shadow-sm">
-          {% if show.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
-            class="card-img-top"
-            alt="{{ show.name }}"
-            loading="lazy"
-          />
-          {% endif %}
-
-          <div class="card-body">
-            <h5 class="card-title">{{ show.name }}</h5>
-
-            <span class="badge bg-warning text-dark">
-              ⭐ {{ show.vote_average|floatformat:1 }}
-            </span>
-
-            <a
-              href="{% url 'tv-detail' show.tmdb_id %}"
-              class="btn btn-dark btn-sm float-end"
-            >
-              Details
-            </a>
-          </div>
-        </div>
-      </div>
-      {% empty %}
-      <div class="col-12">
-        <p class="text-muted">No top-rated TV shows available.</p>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- MOST VOTED TV SHOWS -->
-<section class="py-5">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h2>Popular TV Shows</h2>
-        <p class="text-muted mb-0">Shows attracting the most attention.</p>
-      </div>
-
-      <a href="{% url 'tv-shows' %}" class="btn btn-outline-primary">
-        View All
-      </a>
-    </div>
-
-    <div class="row g-4">
-      {% for show in most_voted_shows %}
-      <div class="col-6 col-md-4 col-lg-3">
-        <div class="card h-100 shadow-sm">
-          {% if show.poster_path %}
-          <img
-            src="https://image.tmdb.org/t/p/w500{{ show.poster_path }}"
-            class="card-img-top"
-            alt="{{ show.name }}"
-            loading="lazy"
-          />
-          {% endif %}
-
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ show.name }}</h5>
-
-            <div class="mb-3">
-              <span class="badge bg-warning text-dark">
-                ⭐ {{ show.vote_average|floatformat:1 }}
-              </span>
-
-              <span class="badge bg-secondary">
-                {{ show.vote_count }} votes
-              </span>
-            </div>
-
-            <a
-              href="{% url 'tv-detail' show.tmdb_id %}"
-              class="btn btn-dark btn-sm mt-auto"
-            >
-              Details
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {% empty %}
-      <div class="col-12">
-        <p class="text-muted">No voted TV shows available.</p>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<!-- GENRES -->
-<section class="py-5">
-  <div class="container">
-    <div class="mb-4">
-      <h2>Browse by Genre</h2>
-      <p class="text-muted">Find movies based on your favorite genre.</p>
-    </div>
-
-    <div class="row g-4">
-      <!-- ACTION -->
-      <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/action/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Action</h5>
-                <p class="text-muted mb-0">
-                  Explosions, fights and questionable survival skills.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'action' %}" class="genre-card text-center">
+          <div class="genre-icon">⚔️</div>
+          <h5>Action</h5>
+          <p>High-energy stories and thrilling adventures.</p>
         </a>
       </div>
 
-      <!-- COMEDY -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/comedy/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Comedy</h5>
-                <p class="text-muted mb-0">
-                  Movies designed to make you laugh.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'comedy' %}" class="genre-card text-center">
+          <div class="genre-icon">😂</div>
+          <h5>Comedy</h5>
+          <p>Stories that bring the laughs.</p>
         </a>
       </div>
 
-      <!-- DRAMA -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/drama/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Drama</h5>
-                <p class="text-muted mb-0">
-                  Stories with feelings. Humans love those.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'drama' %}" class="genre-card text-center">
+          <div class="genre-icon">🎭</div>
+          <h5>Drama</h5>
+          <p>Powerful characters and unforgettable stories.</p>
         </a>
       </div>
 
-      <!-- HORROR -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/horror/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Horror</h5>
-                <p class="text-muted mb-0">
-                  Monsters, ghosts and bad decisions.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'horror' %}" class="genre-card text-center">
+          <div class="genre-icon">👻</div>
+          <h5>Horror</h5>
+          <p>Dark stories, suspense and nightmares.</p>
         </a>
       </div>
 
-      <!-- SCI-FI -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/scifi/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Sci-Fi</h5>
-                <p class="text-muted mb-0">
-                  Space, technology and futuristic worlds.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'scifi' %}" class="genre-card text-center">
+          <div class="genre-icon">🚀</div>
+          <h5>Sci-Fi</h5>
+          <p>Explore futuristic worlds and technology.</p>
         </a>
       </div>
 
-      <!-- ROMANCE -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/romance/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Romance</h5>
-                <p class="text-muted mb-0">
-                  Love stories and emotional damage.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'romance' %}" class="genre-card text-center">
+          <div class="genre-icon">❤️</div>
+          <h5>Romance</h5>
+          <p>Love stories and emotional journeys.</p>
         </a>
       </div>
 
-      <!-- THRILLER -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/thriller/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Thriller</h5>
-                <p class="text-muted mb-0">
-                  Suspense, mystery and plot twists.
-                </p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'thriller' %}" class="genre-card text-center">
+          <div class="genre-icon">🔍</div>
+          <h5>Thriller</h5>
+          <p>Suspense, mystery and unexpected twists.</p>
         </a>
       </div>
 
-      <!-- ANIMATION -->
       <div class="col-6 col-md-4 col-lg-3">
-        <a href="/genre/animation/" class="text-decoration-none">
-          <div class="card-wrapper">
-            <div class="card text-center h-100">
-              <div class="card-body">
-                <h5 class="card-title">Animation</h5>
-                <p class="text-muted mb-0">Animated stories for every age.</p>
-              </div>
-            </div>
-          </div>
+        <a href="{% url 'animation' %}" class="genre-card text-center">
+          <div class="genre-icon">🎨</div>
+          <h5>Animation</h5>
+          <p>Animated adventures for every age.</p>
         </a>
       </div>
     </div>
@@ -715,71 +2040,103 @@
 </section>
 
 <!-- WHY CALYPSO -->
-<section class="py-5 bg-light">
+<section class="why-calypso py-5">
   <div class="container">
     <div class="text-center mb-5">
-      <h2>Why Calypso?</h2>
-      <p class="text-muted">
-        Everything you need to discover your next favorite movie.
+      <h2 class="fw-bold">Why Calypso?</h2>
+      <p class="section-subtitle">
+        More than a catalogue. A place to discover, save and share stories.
       </p>
     </div>
 
     <div class="row g-4">
-      <!-- FEATURE 1 -->
       <div class="col-md-4">
-        <div class="card h-100 text-center border-0">
-          <div class="card-body p-4">
-            <h4 class="card-title">Discover Movies</h4>
-            <p class="card-text text-muted">
-              Explore movies from different genres, years, and categories.
-            </p>
+        <div class="why-card text-center">
+          <div class="feature-icon">
+            <i class="fa-solid fa-compass"></i>
           </div>
+          <h4>Discover Something New</h4>
+          <p>
+            Explore movies and TV shows through genres, ratings, trends and
+            carefully organized collections.
+          </p>
         </div>
       </div>
 
-      <!-- FEATURE 2 -->
       <div class="col-md-4">
-        <div class="card h-100 text-center border-0">
-          <div class="card-body p-4">
-            <h4 class="card-title">Find Your Favorites</h4>
-            <p class="card-text text-muted">
-              Save movies you love and keep track of what you want to watch.
-            </p>
+        <div class="why-card text-center">
+          <div class="feature-icon">
+            <i class="fa-solid fa-bookmark"></i>
           </div>
+          <h4>Build Your Library</h4>
+          <p>
+            Save what you want to watch, organize your favorites and create
+            collections that reflect your taste.
+          </p>
         </div>
       </div>
 
-      <!-- FEATURE 3 -->
       <div class="col-md-4">
-        <div class="card h-100 text-center border-0">
-          <div class="card-body p-4">
-            <h4 class="card-title">Personalized Experience</h4>
-            <p class="card-text text-muted">
-              Create your profile and build your own movie collection.
-            </p>
+        <div class="why-card text-center">
+          <div class="feature-icon">
+            <i class="fa-solid fa-users"></i>
           </div>
+          <h4>Connect Through Stories</h4>
+          <p>
+            Share your collections, follow other users and join conversations
+            about the movies and shows you enjoy.
+          </p>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CALL TO ACTION -->
+<!-- =========================================================
+     CALL TO ACTION
+========================================================= -->
+
 {% if not user.is_authenticated %}
-<section class="py-5">
-  <div class="container">
-    <div class="text-center">
-      <h2>Ready to Find Your Next Favorite Movie?</h2>
-      <p class="text-muted mb-4">
-        Create an account and start building your personal movie collection.
-      </p>
 
-      <a href="/users/register/" class="btn btn-primary me-2">
-        Create Account
-      </a>
+<section class="catalog-section">
 
-      <a href="/movies/" class="btn btn-outline-primary"> Browse Movies </a>
+    <div class="container">
+
+        <div class="recommender-banner text-center">
+
+            <h2 class="display-5 mb-3">
+                Your Next Favorite Story Awaits.
+            </h2>
+
+            <p class="fs-5 mx-auto mb-4">
+                Create your Calypso account to build collections,
+                manage your watchlist and join the community.
+            </p>
+
+            <div class="d-flex justify-content-center flex-wrap gap-3">
+
+                <a
+                    href="/users/register/"
+                    class="btn btn-primary btn-lg"
+                >
+                    Create Account
+                </a>
+
+                <a
+                    href="{% url 'movies' %}"
+                    class="btn btn-outline-light btn-lg"
+                >
+                    Browse Movies
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
-  </div>
+
 </section>
-{% endif %} {% endblock %}
+
+{% endif %}
+
+{% endblock %}

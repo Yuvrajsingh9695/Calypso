@@ -1,3 +1,4 @@
+
 from django.urls import path
 
 from . import views
@@ -15,7 +16,6 @@ urlpatterns = [
         name="add_movie_comment",
     ),
 
-
     # ========================================================
     # TV SHOW COMMENTS
     # ========================================================
@@ -26,6 +26,25 @@ urlpatterns = [
         name="add_tv_comment",
     ),
 
+    # ========================================================
+    # TV SEASON COMMENTS
+    # ========================================================
+
+    path(
+        "tv/<int:tv_show_id>/season/<int:season_number>/add/",
+        views.add_tv_season_comment,
+        name="add_tv_season_comment",
+    ),
+
+    # ========================================================
+    # TV EPISODE COMMENTS
+    # ========================================================
+
+    path(
+        "tv/<int:tv_show_id>/season/<int:season_number>/episode/<int:episode_number>/add/",
+        views.add_tv_episode_comment,
+        name="add_tv_episode_comment",
+    ),
 
     # ========================================================
     # COMMENT REPLIES
@@ -37,7 +56,6 @@ urlpatterns = [
         name="reply_comment",
     ),
 
-
     # ========================================================
     # COMMENT LIKE
     # ========================================================
@@ -48,7 +66,6 @@ urlpatterns = [
         name="like_comment",
     ),
 
-
     # ========================================================
     # DELETE COMMENT
     # ========================================================
@@ -58,4 +75,5 @@ urlpatterns = [
         views.delete_comment,
         name="delete_comment",
     ),
+
 ]

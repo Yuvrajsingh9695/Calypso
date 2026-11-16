@@ -1,124 +1,200 @@
+
 {% extends "base.html" %}
 
 {% block content %}
 
+<!-- ================================================== -->
+<!-- MOVIE HERO SECTION -->
+<!-- ================================================== -->
+
 <section class="bg-dark text-white py-5">
 
-  <div class="container">
+  {% if tmdb_movie.backdrop_path %}
 
-    <div class="row g-5 align-items-center">
+  <div
+    class="movie-backdrop"
+    style="
+      background:
+        linear-gradient(to right, rgba(0,0,0,0.95), rgba(0,0,0,0.55)),
+        linear-gradient(to top, #212529, transparent),
+        url('https://image.tmdb.org/t/p/original{{ tmdb_movie.backdrop_path }}')
+        center top / cover no-repeat;
+    "
+  >
 
-      <!-- Movie Poster -->
+  {% else %}
 
-      <div class="col-md-4">
+  <div class="bg-dark">
 
-        {% if movie.poster_path %}
+  {% endif %}
+
+    <div class="container py-4">
+
+      <div class="row g-5 align-items-start">
+
+        <!-- MOVIE POSTER -->
+
+        <div class="col-md-4">
+
+          {% if tmdb_movie.poster_path %}
 
           <img
-            src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}"
-            class="img-fluid rounded shadow"
+            src="https://image.tmdb.org/t/p/w500{{ tmdb_movie.poster_path }}"
+            class="img-fluid rounded shadow movie-detail-poster"
+            alt="{{ tmdb_movie.title }}"
+            loading="eager"
+          />
+
+          {% elif movie.poster_path %}
+
+          <img
+            src="{{ movie.poster_url }}"
+            class="img-fluid rounded shadow movie-detail-poster"
             alt="{{ movie.title }}"
-          >
-
-        {% endif %}
-
-      </div>
-
-
-      <!-- Movie Details -->
-
-      <div class="col-md-8">
-
-        <h1 class="display-4 fw-bold">
-          {{ movie.title }}
-        </h1>
-
-
-        {% if movie.release_date %}
-
-          <p class="text-secondary">
-            {{ movie.release_date|date:"Y" }}
-          </p>
-
-        {% endif %}
-
-
-        <!-- Ratings -->
-
-        <div class="mb-3">
-
-          <span class="badge bg-warning text-dark">
-            ⭐ {{ movie.vote_average|floatformat:1 }}
-          </span>
-
-
-          {% if movie.imdb_rating %}
-
-            <span class="badge bg-secondary ms-2">
-              IMDb {{ movie.imdb_rating|floatformat:1 }}
-            </span>
+          />
 
           {% endif %}
 
         </div>
 
 
-        <!-- Watchlist + Collection -->
+        <!-- MOVIE DETAILS -->
 
-        {% if user.is_authenticated %}
+        <div class="col-md-8">
+
+          <h1 class="display-4 fw-bold">
+
+            {{ tmdb_movie.title|default:movie.title }}
+
+          </h1>
+
+
+          <!-- RELEASE YEAR -->
+
+          {% if tmdb_movie.release_date %}
+
+          <p class="text-secondary">
+
+            {{ tmdb_movie.release_date|slice:":4" }}
+
+          </p>
+
+          {% elif movie.release_date %}
+
+          <p class="text-secondary">
+
+            {{ movie.release_date|date:"Y" }}
+
+          </p>
+
+          {% endif %}
+
+
+          <!-- RATINGS -->
+
+          <div class="mb-3">
+
+            {% if tmdb_movie.vote_average %}
+
+            <span class="badge bg-warning text-dark">
+
+              ⭐ {{ tmdb_movie.vote_average|floatformat:1 }}
+
+            </span>
+
+            {% else %}
+
+            <span class="badge bg-warning text-dark">
+
+              ⭐ {{ movie.vote_average|floatformat:1 }}
+
+            </span>
+
+            {% endif %}
+
+
+            {% if external_ids.imdb_id %}
+
+            <a
+              href="https://www.imdb.com/title/{{ external_ids.imdb_id }}/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="badge bg-secondary text-decoration-none ms-2"
+            >
+
+              IMDb
+
+            </a>
+
+            {% elif movie.imdb_rating %}
+
+            <span class="badge bg-secondary ms-2">
+
+              IMDb {{ movie.imdb_rating|floatformat:1 }}
+
+            </span>
+
+            {% endif %}
+
+          </div>
+
+
+          <!-- WATCHLIST AND COLLECTION -->
+
+          {% if user.is_authenticated %}
 
           <div class="d-flex flex-wrap gap-2 mb-4">
 
             {% if in_watchlist %}
 
-              <form
-                method="POST"
-                action="{% url 'remove-movie-watchlist' movie.tmdb_id %}"
-                class="d-inline"
+            <form
+              method="POST"
+              action="{% url 'remove-movie-watchlist' movie.tmdb_id %}"
+              class="d-inline"
+            >
+
+              {% csrf_token %}
+
+              <button
+                type="submit"
+                class="btn btn-outline-danger"
               >
 
-                {% csrf_token %}
+                <i class="fa-solid fa-bookmark me-1"></i>
 
-                <button
-                  type="submit"
-                  class="btn btn-outline-danger"
-                >
+                Remove from Watchlist
 
-                  <i class="fa-solid fa-bookmark me-1"></i>
+              </button>
 
-                  Remove from Watchlist
-
-                </button>
-
-              </form>
+            </form>
 
             {% else %}
 
-              <form
-                method="POST"
-                action="{% url 'add-movie-watchlist' movie.tmdb_id %}"
-                class="d-inline"
+            <form
+              method="POST"
+              action="{% url 'add-movie-watchlist' movie.tmdb_id %}"
+              class="d-inline"
+            >
+
+              {% csrf_token %}
+
+              <button
+                type="submit"
+                class="btn btn-primary"
               >
 
-                {% csrf_token %}
+                <i class="fa-solid fa-bookmark me-1"></i>
 
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                >
+                Add to Watchlist
 
-                  <i class="fa-solid fa-bookmark me-1"></i>
+              </button>
 
-                  Add to Watchlist
-
-                </button>
-
-              </form>
+            </form>
 
             {% endif %}
 
 
-            <!-- Add to Collection -->
+            <!-- ADD TO COLLECTION -->
 
             <a
               href="{% url 'movie-collection-selector' movie.tmdb_id %}"
@@ -133,7 +209,7 @@
 
           </div>
 
-        {% else %}
+          {% else %}
 
           <div class="d-flex flex-wrap gap-2 mb-4">
 
@@ -161,87 +237,128 @@
 
           </div>
 
-        {% endif %}
+          {% endif %}
 
 
-        <!-- Genres -->
+          <!-- GENRES -->
 
-        {% if movie.genres %}
+          {% if tmdb_movie.genres %}
 
           <p>
 
-            <strong>
-              Genres:
-            </strong>
+            <strong>Genres:</strong>
+
+            {% for genre in tmdb_movie.genres %}
+
+            <span class="badge bg-secondary me-1">
+
+              {{ genre.name }}
+
+            </span>
+
+            {% endfor %}
+
+          </p>
+
+          {% elif movie.genres %}
+
+          <p>
+
+            <strong>Genres:</strong>
 
             {{ movie.genres }}
 
           </p>
 
-        {% endif %}
+          {% endif %}
 
 
-        <!-- Director -->
+          <!-- DIRECTOR -->
 
-        {% if movie.director %}
+          {% if movie.director %}
 
           <p>
 
-            <strong>
-              Director:
-            </strong>
+            <strong>Director:</strong>
 
             {{ movie.director }}
 
           </p>
 
-        {% endif %}
+          {% endif %}
 
 
-        <!-- Cast -->
+          <!-- TAGLINE -->
 
-        {% if movie.cast %}
+          {% if tmdb_movie.tagline %}
 
-          <p>
+          <p class="fst-italic text-secondary">
 
-            <strong>
-              Cast:
-            </strong>
-
-            {{ movie.cast }}
+            "{{ tmdb_movie.tagline }}"
 
           </p>
 
-        {% endif %}
+          {% endif %}
 
 
-        <!-- Overview -->
+          <!-- OVERVIEW -->
 
-        {% if movie.overview %}
+          {% if tmdb_movie.overview %}
 
           <p class="lead">
-            {{ movie.overview }}
+
+            {{ tmdb_movie.overview }}
+
           </p>
 
-        {% endif %}
+          {% elif movie.overview %}
+
+          <p class="lead">
+
+            {{ movie.overview }}
+
+          </p>
+
+          {% endif %}
 
 
-        <!-- Trailer -->
+          <!-- TRAILER -->
 
-        <div class="mt-4">
+          <div class="mt-4">
 
-          <a
-            href="{{ movie.trailer_search_url }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-danger"
-          >
+            {% if trailer.key %}
 
-            <i class="fa-brands fa-youtube me-2"></i>
+            <a
+              href="https://www.youtube.com/watch?v={{ trailer.key }}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-danger"
+            >
 
-            Watch Trailer
+              <i class="fa-brands fa-youtube me-2"></i>
 
-          </a>
+              Watch Official Trailer
+
+            </a>
+
+            {% else %}
+
+            <a
+              href="{{ movie.trailer_search_url }}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-danger"
+            >
+
+              <i class="fa-brands fa-youtube me-2"></i>
+
+              Search Trailer on YouTube
+
+            </a>
+
+            {% endif %}
+
+          </div>
 
         </div>
 
@@ -254,70 +371,237 @@
 </section>
 
 
+<!-- ================================================== -->
+<!-- CAST SECTION -->
+<!-- ================================================== -->
 
-<!-- Movie Information -->
+{% if cast_members %}
 
 <section class="py-5">
 
   <div class="container">
 
-    <div class="row">
+    <h3 class="mb-4">
 
-      <!-- Information -->
+      <i class="fa-solid fa-users me-2"></i>
+
+      Top Cast
+
+    </h3>
+
+
+    <div class="row g-3">
+
+      {% for person in cast_members|slice:":15" %}
+
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+
+        <a
+          href="{% url 'person-detail' person.id %}"
+          class="text-decoration-none text-body"
+        >
+
+          <div class="card bg-dark text-white border-secondary h-100">
+
+            {% if person.profile_path %}
+
+            <img
+              src="https://image.tmdb.org/t/p/w185{{ person.profile_path }}"
+              class="card-img-top"
+              alt="{{ person.name }}"
+              style="
+                height: 220px;
+                width: 100%;
+                object-fit: cover;
+                object-position: center top;
+              "
+              loading="lazy"
+            />
+
+            {% else %}
+
+            <div
+              class="d-flex align-items-center justify-content-center bg-secondary"
+              style="height: 220px"
+            >
+
+              <i class="fa-solid fa-user fa-3x text-white-50"></i>
+
+            </div>
+
+            {% endif %}
+
+
+            <div class="card-body">
+
+              <h6 class="card-title mb-1">
+
+                {{ person.name }}
+
+              </h6>
+
+              <p class="card-text text-secondary small mb-0">
+
+                {{ person.character|default:"Cast member" }}
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endif %}
+
+
+<!-- ================================================== -->
+<!-- MOVIE INFORMATION -->
+<!-- ================================================== -->
+
+<section class="py-5">
+
+  <div class="container">
+
+    <div class="row g-4">
+
+
+      <!-- GENERAL INFORMATION -->
 
       <div class="col-md-6">
 
-        <h3>
+        <h3 class="mb-3">
+
+          <i class="fa-solid fa-circle-info me-2"></i>
+
           Movie Information
+
         </h3>
 
 
         <ul class="list-group">
 
-          <li class="list-group-item">
+          <li class="list-group-item d-flex justify-content-between">
 
-            <strong>
-              Runtime:
-            </strong>
+            <strong>Runtime</strong>
 
-            {{ movie.runtime }} minutes
+            <span>
 
-          </li>
+              {% if tmdb_movie.runtime %}
 
+              {{ tmdb_movie.runtime }} minutes
 
-          <li class="list-group-item">
+              {% else %}
 
-            <strong>
-              Language:
-            </strong>
+              {{ movie.runtime }} minutes
 
-            {{ movie.original_language }}
+              {% endif %}
 
-          </li>
-
-
-          <li class="list-group-item">
-
-            <strong>
-              Votes:
-            </strong>
-
-            {{ movie.vote_count }}
+            </span>
 
           </li>
 
 
-          {% if movie.certification_us %}
+          <li class="list-group-item d-flex justify-content-between">
 
-            <li class="list-group-item">
+            <strong>Original Language</strong>
 
-              <strong>
-                Certification:
-              </strong>
+            <span>
 
-              {{ movie.certification_us }}
+              {{ tmdb_movie.original_language|default:movie.original_language|upper }}
 
-            </li>
+            </span>
+
+          </li>
+
+
+          <li class="list-group-item d-flex justify-content-between">
+
+            <strong>Vote Count</strong>
+
+            <span>
+
+              {{ tmdb_movie.vote_count|default:movie.vote_count }}
+
+            </span>
+
+          </li>
+
+
+          {% if tmdb_movie.status %}
+
+          <li class="list-group-item d-flex justify-content-between">
+
+            <strong>Status</strong>
+
+            <span>
+
+              {{ tmdb_movie.status }}
+
+            </span>
+
+          </li>
+
+          {% endif %}
+
+
+          {% if tmdb_movie.budget %}
+
+          <li class="list-group-item d-flex justify-content-between">
+
+            <strong>Budget</strong>
+
+            <span>
+
+              ${{ tmdb_movie.budget }}
+
+            </span>
+
+          </li>
+
+          {% endif %}
+
+
+          {% if tmdb_movie.revenue %}
+
+          <li class="list-group-item d-flex justify-content-between">
+
+            <strong>Revenue</strong>
+
+            <span>
+
+              ${{ tmdb_movie.revenue }}
+
+            </span>
+
+          </li>
+
+          {% endif %}
+
+
+          {% if certification_us %}
+
+          <li class="list-group-item d-flex justify-content-between">
+
+            <strong>Certification</strong>
+
+            <span>
+
+              {{ certification_us }}
+
+            </span>
+
+          </li>
 
           {% endif %}
 
@@ -326,32 +610,66 @@
       </div>
 
 
-      <!-- Keywords / Writers -->
+      <!-- WRITERS AND KEYWORDS -->
 
       <div class="col-md-6">
 
-        {% if movie.keywords %}
+        {% if movie.writers %}
 
-          <h3>
-            Keywords
-          </h3>
+        <h3 class="mb-3">
 
-          <p>
-            {{ movie.keywords }}
-          </p>
+          <i class="fa-solid fa-pen me-2"></i>
+
+          Writers
+
+        </h3>
+
+        <p>
+
+          {{ movie.writers }}
+
+        </p>
 
         {% endif %}
 
 
-        {% if movie.writers %}
+        {% if keywords %}
 
-          <h3>
-            Writers
-          </h3>
+        <h3 class="mb-3 mt-4">
 
-          <p>
-            {{ movie.writers }}
-          </p>
+          <i class="fa-solid fa-tags me-2"></i>
+
+          Keywords
+
+        </h3>
+
+        <div class="d-flex flex-wrap gap-2">
+
+          {% for keyword in keywords %}
+
+          <span class="badge bg-secondary">
+
+            {{ keyword.name }}
+
+          </span>
+
+          {% endfor %}
+
+        </div>
+
+        {% elif movie.keywords %}
+
+        <h3 class="mb-3 mt-4">
+
+          Keywords
+
+        </h3>
+
+        <p>
+
+          {{ movie.keywords }}
+
+        </p>
 
         {% endif %}
 
@@ -360,13 +678,204 @@
     </div>
 
 
-    <!-- Comments -->
+    <!-- ================================================== -->
+    <!-- RELEASE INFORMATION -->
+    <!-- ================================================== -->
 
-    {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+    {% if release_dates %}
+
+    <div class="mt-5">
+
+      <h3 class="mb-3">
+
+        <i class="fa-solid fa-calendar-days me-2"></i>
+
+        Release Information
+
+      </h3>
+
+      <div class="table-responsive">
+
+        <table class="table table-bordered table-striped align-middle">
+
+          <thead>
+
+            <tr>
+
+              <th>Region</th>
+
+              <th>Release Date</th>
+
+              <th>Certification</th>
+
+              <th>Release Type</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for region in release_dates %}
+
+              {% for release in region.release_dates %}
+
+              <tr>
+
+                <td>
+
+                  {{ region.iso_3166_1 }}
+
+                </td>
+
+                <td>
+
+                  {{ release.release_date|slice:":10" }}
+
+                </td>
+
+                <td>
+
+                  {{ release.certification|default:"Not specified" }}
+
+                </td>
+
+                <td>
+
+                  {{ release.type }}
+
+                </td>
+
+              </tr>
+
+              {% endfor %}
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================== -->
+    <!-- RELEASE INFORMATION -->
+    <!-- ================================================== -->
+
+    {% if release_information %}
+    <div class="mt-5">
+      <div class="mb-4">
+        <h3 class="mb-1">
+          <i class="fa-solid fa-calendar-days me-2"></i>
+          Release Information
+        </h3>
+        <p class="text-secondary small mb-0">
+          Theatrical release dates and age certifications by country.
+        </p>
+      </div>
+
+      <div class="row g-3">
+        {% for region in release_information %}
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="card bg-dark text-white border-secondary h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                <h5 class="card-title mb-0">
+                  <i class="fa-solid fa-globe me-2 text-secondary"></i>
+                  {{ region.country }}
+                </h5>
+
+                {% if region.is_origin %}
+                <span class="badge bg-primary">Origin</span>
+                {% endif %}
+              </div>
+
+              {% if region.release_date %}
+              <div class="mb-3">
+                <div class="text-secondary small mb-1">Release date</div>
+                <div class="fw-semibold">
+                  <i class="fa-regular fa-calendar me-2"></i>
+                  {{ region.release_date }}
+                </div>
+              </div>
+              {% endif %}
+
+              <div>
+                <div class="text-secondary small mb-1">Certification</div>
+                {% if region.certification and region.certification != "Not rated" %}
+                <span class="badge bg-warning text-dark fs-6">
+                  {{ region.certification }}
+                </span>
+                {% else %}
+                <span class="text-secondary small">Not available</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+
+    <!-- ================================================== -->
+    <!-- ADDITIONAL IMAGES -->
+    <!-- ================================================== -->
+
+    {% if images.backdrops %}
+
+    <div class="mt-5">
+
+      <h3 class="mb-4">
+
+        <i class="fa-solid fa-images me-2"></i>
+
+        Movie Images
+
+      </h3>
+
+      <div class="row g-3">
+
+        {% for image in images.backdrops|slice:":6" %}
+
+        <div class="col-6 col-md-4">
+
+          <img
+            src="https://image.tmdb.org/t/p/w780{{ image.file_path }}"
+            alt="{{ tmdb_movie.title }} backdrop"
+            class="img-fluid rounded shadow"
+            loading="lazy"
+          />
+
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================================================== -->
+    <!-- COMMENTS SECTION -->
+    <!-- ================================================== -->
+
+    <div class="py-5">
+
+      {% include "comments/comment_section.html" with comments=comments comment_form_url=comment_form_url %}
+
+    </div>
 
   </div>
 
 </section>
-
 
 {% endblock %}
