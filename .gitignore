@@ -50,23 +50,16 @@ credentials.json
 # DATASETS AND LARGE DATA FILES
 # =====================================================
 
-datasets/
-data/
-
-data_ml/*.csv
-
-*.parquet
-*.feather
-*.xlsx
-*.xls
+# Keep Calypso datasets and ML assets tracked.
+# Do not ignore data/, data_ml/, datasets/,
+# ml_models/ or v10_cache/ globally.
 
 # =====================================================
 # CALYPSO RECOMMENDATION SYSTEM
 # =====================================================
 
-# Keep v10_cache and required recommender assets tracked.
-# Do not ignore *.pkl globally because Calypso may need
-# these files to load its recommendation models.
+# Keep required pickle models and recommender caches.
+# Do not ignore *.pkl globally.
 
 # =====================================================
 # JUPYTER

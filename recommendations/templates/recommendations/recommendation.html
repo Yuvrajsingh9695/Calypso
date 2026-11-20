@@ -1,116 +1,256 @@
-{% extends "base.html" %} {% block content %}
+
+{% extends "base.html" %}
+
+{% block content %}
 
 <section class="py-5">
-  <div class="container">
-    <!-- HEADER -->
+    <div class="container">
 
-    <div class="text-center mb-5">
-      <h1 class="display-5 fw-bold">Movie Recommendations</h1>
+        <!-- HEADER -->
 
-      <p class="text-secondary">
-        Discover movies similar to the ones you love.
-      </p>
+        <div class="text-center mb-5">
 
-      <p class="small text-secondary">
-        Powered by TF-IDF, TruncatedSVD, K-Means and Cosine Similarity
-      </p>
-    </div>
+            <h1 class="display-5 fw-bold">
+                Movie Recommendations
+            </h1>
 
-    <!-- SEARCH -->
-
-    <div class="row justify-content-center mb-5">
-      <div class="col-lg-8">
-        <div class="card bg-dark border-secondary">
-          <div class="card-body p-4">
-            <form method="POST">
-              {% csrf_token %}
-
-              <label for="movie" class="form-label fw-semibold">
-                Search for a movie
-              </label>
-
-              <input
-                type="text"
-                id="movie"
-                name="movie"
-                list="movie-list"
-                class="form-control form-control-lg bg-dark text-white border-secondary"
-                placeholder="Type a movie title..."
-                value="{{ selected_movie|default:'' }}"
-                autocomplete="off"
-                required
-              />
-
-              <datalist id="movie-list">
-                {% for movie in movie_titles %}
-
-                <option value="{{ movie }}">{% endfor %}</option>
-              </datalist>
-
-              <button type="submit" class="btn btn-primary btn-lg w-100 mt-3">
-                Get Recommendations
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    {% if selected_movie %}
-
-    <div class="mb-4">
-      <h2 class="h3">
-        Recommendations for
-
-        <span class="text-primary"> {{ selected_movie }} </span>
-      </h2>
-
-      <p class="text-secondary">
-        Movies from the same K-Means cluster, ranked using cosine similarity.
-      </p>
-    </div>
-
-    {% if recommendations %}
-
-    <div class="row g-4">
-      {% for movie in recommendations %}
-
-      <div class="col-md-6 col-lg-4">
-        <div class="card bg-dark text-white border-secondary h-100">
-          <div class="card-body">
-            <span class="badge bg-primary mb-3"> #{{ forloop.counter }} </span>
-
-            <h5 class="card-title">{{ movie.title }}</h5>
-
-            <hr class="border-secondary" />
-
-            <p class="text-secondary mb-2">
-              Similarity:
-
-              <span class="text-success fw-bold"> {{ movie.similarity }} </span>
+            <p class="text-secondary">
+                Discover movies similar to the ones you love.
             </p>
 
-            <p class="text-secondary mb-0">
-              Cluster:
-
-              <span class="text-info fw-bold"> {{ movie.cluster }} </span>
+            <p class="small text-secondary">
+                Powered by TF-IDF, TruncatedSVD, K-Means and Cosine Similarity
             </p>
-          </div>
+
         </div>
-      </div>
 
-      {% endfor %}
+
+        <!-- SEARCH -->
+
+        <div class="row justify-content-center mb-5">
+
+            <div class="col-lg-8">
+
+                <div class="card bg-dark border-secondary">
+
+                    <div class="card-body p-4">
+
+                        <form method="POST">
+
+                            {% csrf_token %}
+
+                            <label for="movie" class="form-label fw-semibold">
+                                Search for a movie
+                            </label>
+
+                            <input
+                                type="text"
+                                id="movie"
+                                name="movie"
+                                list="movie-list"
+                                class="form-control form-control-lg bg-dark text-white border-secondary"
+                                placeholder="Type a movie title..."
+                                value="{{ selected_movie|default:'' }}"
+                                autocomplete="off"
+                                required
+                            />
+
+                            <datalist id="movie-list">
+
+                                {% for movie in movie_titles %}
+
+                                    <option value="{{ movie }}"></option>
+
+                                {% endfor %}
+
+                            </datalist>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn-lg w-100 mt-3"
+                            >
+                                Get Recommendations
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {% if selected_movie %}
+
+
+        <!-- RECOMMENDATION HEADER -->
+
+        <div class="mb-4">
+
+            <h2 class="h3">
+                Recommendations for
+
+                <span class="text-primary">
+                    {{ selected_movie }}
+                </span>
+            </h2>
+
+            <p class="text-secondary">
+                Movies from the same K-Means cluster, ranked using cosine similarity.
+            </p>
+
+        </div>
+
+
+        {% if recommendations %}
+
+
+        <!-- RECOMMENDATION CARDS -->
+
+        <div class="row g-4">
+
+            {% for movie in recommendations %}
+
+            <div class="col-md-6 col-lg-4">
+
+                {% if movie.tmdb_id %}
+
+                <a
+                    href="{% url 'movie-detail' movie.tmdb_id %}"
+                    class="text-decoration-none text-reset d-block h-100"
+                >
+
+                {% endif %}
+
+
+                <div
+                    class="card bg-dark text-white border-secondary h-100 p-3"
+                    style="max-width: 360px; width: 100%; margin: 0 auto;"
+                >
+
+
+                    <!-- POSTER -->
+
+                    {% if movie.poster_url %}
+
+                    <img
+                        src="{{ movie.poster_url }}"
+                        class="card-img-top"
+                        alt="{{ movie.title }}"
+                        style="
+                            width: 250px;
+                            height: 375px;
+                            display: block;
+                            object-fit: contain;
+                            margin: 0 auto;
+                            background-color: #111;
+                        "
+                        loading="lazy"
+                    />
+
+                    {% else %}
+
+                    <div
+                        class="bg-secondary d-flex align-items-center justify-content-center"
+                        style="
+                            width: 250px;
+                            height: 375px;
+                            margin: 0 auto;
+                        "
+                    >
+                        <span class="text-white-50">
+                            Poster unavailable
+                        </span>
+                    </div>
+
+                    {% endif %}
+
+
+                    <!-- CARD DETAILS -->
+
+                    <div
+                        class="card-body p-3"
+                        style="
+                            max-width: 250px;
+                            width: 100%;
+                            margin: 0 auto;
+                        "
+                    >
+
+                        <span class="badge bg-primary mb-3">
+                            #{{ forloop.counter }}
+                        </span>
+
+
+                        <h5 class="card-title">
+                            {{ movie.title }}
+                        </h5>
+
+
+                        <hr class="border-secondary" />
+
+
+                        <p class="text-secondary mb-2">
+
+                            Similarity:
+
+                            <span class="text-success fw-bold">
+                                {{ movie.similarity }}
+                            </span>
+
+                        </p>
+
+
+                        <p class="text-secondary mb-0">
+
+                            Cluster:
+
+                            <span class="text-info fw-bold">
+                                {{ movie.cluster }}
+                            </span>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                {% if movie.tmdb_id %}
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- NO RECOMMENDATIONS -->
+
+        <div class="alert alert-warning">
+
+            No recommendations found for
+            <strong>{{ selected_movie }}</strong>.
+
+        </div>
+
+
+        {% endif %}
+
+        {% endif %}
+
     </div>
 
-    {% else %}
-
-    <div class="alert alert-warning">
-      No recommendations found for
-      <strong>{{ selected_movie }}</strong>.
-    </div>
-
-    {% endif %} {% endif %}
-  </div>
 </section>
 
 {% endblock %}

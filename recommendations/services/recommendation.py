@@ -1,7 +1,7 @@
 import os
 import pickle
 from functools import lru_cache
-
+from movies.models import Movie
 import pandas as pd
 
 from django.conf import settings
@@ -109,11 +109,19 @@ def recommend(movie_title, n=10):
 
     for index, score in top_scores:
 
+        movie_title = movies.loc[index, "title"]
+
+        # Find the corresponding movie in Django database
+        movie_record = Movie.objects.filter(title__iexact=movie_title.strip()).first()
+
         recommendations.append(
             {
-                "title": movies.loc[index, "title"],
+                "title": movie_title,
+                "tmdb_id": (movie_record.tmdb_id if movie_record else None),
                 "similarity": round(float(score), 4),
                 "cluster": int(movies.loc[index, "svd_cluster"]),
+                "poster_url": (movie_record.poster_url if movie_record else None),
+                "tmdb_id": (movie_record.tmdb_id if movie_record else None),
             }
         )
 
