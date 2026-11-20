@@ -22,10 +22,13 @@ ENV/
 # DJANGO
 # =====================================================
 
-db.sqlite3
+# Ignore SQLite databases by default
 db.sqlite3-journal
 *.sqlite
 *.sqlite3
+
+# Allow the active Calypso database
+!db.sqlite3
 
 staticfiles/
 media/
