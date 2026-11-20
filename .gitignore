@@ -40,8 +40,6 @@ logs/
 # ENVIRONMENT VARIABLES AND SECRETS
 # =====================================================
 
-.env
-.env.*
 !.env.example
 
 *.pem
